@@ -1,0 +1,869 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cfdna.utilities.h5_utilities &mdash; cfdna 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/typehints.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> cfdna
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">The cfDNA API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">cfdna</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cfdna.utilities.h5_utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cfdna.utilities.h5_utilities</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">ailist</span> <span class="kn">import</span> <span class="n">AIList</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+
+
+<div class="viewcode-block" id="printProgressBar"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.printProgressBar.html#cfdna.utilities.h5_utilities.printProgressBar">[docs]</a><span class="k">def</span> <span class="nf">printProgressBar</span> <span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">length</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="s1">&#39;█&#39;</span><span class="p">,</span> <span class="n">print_end</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call in a loop to create terminal progress bar</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        iteration</span>
+<span class="sd">            int (current iteration)</span>
+<span class="sd">        total</span>
+<span class="sd">            int (total iterations)</span>
+<span class="sd">        prefix</span>
+<span class="sd">            str (prefix string [defualt:&#39;&#39;])</span>
+<span class="sd">        suffix</span>
+<span class="sd">            str (suffix string [defualt:&#39;&#39;])</span>
+<span class="sd">        decimals</span>
+<span class="sd">            int (positive number of decimals in percent complete [defualt:1])</span>
+<span class="sd">        length</span>
+<span class="sd">            int (character length of bar [defualt:100])</span>
+<span class="sd">        fill</span>
+<span class="sd">            str (bar fill character [defualt:&#39;█&#39;])</span>
+<span class="sd">        print_end</span>
+<span class="sd">            str (end character [defualt:&#39;\r&#39;])</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">percent</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;{0:.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">decimals</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;f}&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">iteration</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">)))</span>
+    <span class="n">filledLength</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span> <span class="o">*</span> <span class="n">iteration</span> <span class="o">//</span> <span class="n">total</span><span class="p">)</span>
+    <span class="n">bar</span> <span class="o">=</span> <span class="n">fill</span> <span class="o">*</span> <span class="n">filledLength</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="n">filledLength</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="si">%s</span><span class="s1"> |</span><span class="si">%s</span><span class="s1">| </span><span class="si">%s%%</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">suffix</span><span class="p">),</span> <span class="n">end</span> <span class="o">=</span> <span class="n">print_end</span><span class="p">)</span>
+    
+    <span class="c1"># Print New Line on Complete</span>
+    <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="n">total</span><span class="p">:</span> 
+        <span class="nb">print</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="find_h5_filenames"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.find_h5_filenames.html#cfdna.utilities.h5_utilities.find_h5_filenames">[docs]</a><span class="k">def</span> <span class="nf">find_h5_filenames</span><span class="p">(</span><span class="n">names_list</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Search directory for h5 file names</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        names_list</span>
+<span class="sd">            list</span>
+<span class="sd">        directory</span>
+<span class="sd">            str</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        h5_filenames</span>
+<span class="sd">            list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Record files in directory</span>
+    <span class="n">directory_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;*.h5&quot;</span><span class="p">),</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Iterate over names in list</span>
+    <span class="n">h5_filenames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names_list</span><span class="p">:</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">dir_fn</span> <span class="ow">in</span> <span class="n">directory_files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dir_fn</span><span class="p">:</span>
+                <span class="n">h5_filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dir_fn</span><span class="p">)</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+        <span class="c1"># Could not find file</span>
+        <span class="k">if</span> <span class="n">found</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Could not find file for &quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">h5_filenames</span></div>
+
+
+<span class="c1">######################################</span>
+<span class="c1">#     Write methods</span>
+<span class="c1">######################################</span>
+
+
+<div class="viewcode-block" id="convert_recarray"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.convert_recarray.html#cfdna.utilities.h5_utilities.convert_recarray">[docs]</a><span class="k">def</span> <span class="nf">convert_recarray</span><span class="p">(</span><span class="n">rec_array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert the dtypes of np.recarray to h5py compatible dtypes</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        rec_array</span>
+<span class="sd">            numpy.recarray (Array to convert dtypes for)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        rec_array</span>
+<span class="sd">            numpy.recarray (Array with h5py compatible dtypes)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dtypes</span> <span class="o">=</span> <span class="p">{</span><span class="n">o</span><span class="p">:</span><span class="n">rec_array</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">o</span><span class="p">]</span><span class="o">.</span><span class="n">str</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">rec_array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">fields</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">key_dtype</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dtypes</span><span class="p">[</span><span class="n">key_dtype</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;|O&quot;</span><span class="p">:</span>
+            <span class="n">lengths</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rec_array</span><span class="p">[</span><span class="n">key_dtype</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_array</span><span class="p">[</span><span class="n">key_dtype</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rec_array</span><span class="p">[</span><span class="n">key_dtype</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+                <span class="k">elif</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">rec_array</span><span class="p">[</span><span class="n">key_dtype</span><span class="p">][</span><span class="n">i</span><span class="p">]):</span>
+                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_array</span><span class="p">[</span><span class="n">key_dtype</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_array</span><span class="p">[</span><span class="n">key_dtype</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">max_length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dtypes</span><span class="p">[</span><span class="n">key_dtype</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&lt;S</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dtypes</span><span class="p">[</span><span class="n">key_dtype</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&lt;f8&quot;</span>
+
+    <span class="n">rec_array</span> <span class="o">=</span> <span class="n">rec_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dtypes</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+    <span class="k">return</span> <span class="n">rec_array</span></div>
+
+
+<div class="viewcode-block" id="write_h5_DataFrame"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.write_h5_DataFrame.html#cfdna.utilities.h5_utilities.write_h5_DataFrame">[docs]</a><span class="k">def</span> <span class="nf">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_group</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write pandas.DataFrame to h5py group</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        h5_group</span>
+<span class="sd">            h5py.group</span>
+<span class="sd">        df</span>
+<span class="sd">            pandas.DataFrame</span>
+<span class="sd">        axis</span>
+<span class="sd">            int</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Record axis</span>
+    <span class="n">h5_group</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis</span>
+    <span class="n">h5_group</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    
+    <span class="c1"># Iterate over columns</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="n">index_dtypes</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index_dtypes</span> <span class="o">=</span> <span class="s2">&quot;&lt;S</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="n">columns_dtypes</span> <span class="o">=</span> <span class="s2">&quot;&lt;S</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">columns_dtypes</span> <span class="o">=</span> <span class="s2">&quot;&lt;S</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+        <span class="n">rec_array</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">to_records</span><span class="p">(</span><span class="n">index_dtypes</span><span class="o">=</span><span class="n">index_dtypes</span><span class="p">)</span>
+
+        <span class="n">rec_array</span> <span class="o">=</span> <span class="n">convert_recarray</span><span class="p">(</span><span class="n">rec_array</span><span class="p">)</span>
+
+        <span class="n">h5_group</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec_array</span>
+    
+    <span class="c1"># Iterate over index</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="n">index_dtypes</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index_dtypes</span> <span class="o">=</span> <span class="s2">&quot;&lt;S</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+            <span class="n">columns_dtypes</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">columns_dtypes</span> <span class="o">=</span> <span class="s2">&quot;&lt;S</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+        <span class="n">rec_array</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_records</span><span class="p">(</span><span class="n">index_dtypes</span><span class="o">=</span><span class="n">index_dtypes</span><span class="p">)</span>
+
+        <span class="n">rec_array</span> <span class="o">=</span> <span class="n">convert_recarray</span><span class="p">(</span><span class="n">rec_array</span><span class="p">)</span>
+
+        <span class="n">h5_group</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec_array</span></div>
+
+
+<div class="viewcode-block" id="write_h5_list_df"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.write_h5_list_df.html#cfdna.utilities.h5_utilities.write_h5_list_df">[docs]</a><span class="k">def</span> <span class="nf">write_h5_list_df</span><span class="p">(</span><span class="n">h5_group</span><span class="p">,</span> <span class="n">list_df</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write list of pd.DataFrames to h5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        h5_group</span>
+<span class="sd">            h5py.group</span>
+<span class="sd">        list_df</span>
+<span class="sd">            list</span>
+<span class="sd">        axis</span>
+<span class="sd">            int</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Iterate over list</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_df</span><span class="p">)):</span>
+        <span class="n">h5_index_group</span> <span class="o">=</span> <span class="n">h5_group</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;index_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_index_group</span><span class="p">,</span> <span class="n">list_df</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_summary"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.write_summary.html#cfdna.utilities.h5_utilities.write_summary">[docs]</a><span class="k">def</span> <span class="nf">write_summary</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">output_h5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write cfDNA_summary object</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        summary</span>
+<span class="sd">            dict</span>
+<span class="sd">        output_h5</span>
+<span class="sd">            str</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Open h5 file</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">output_h5</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Write descriptions</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;n_frags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;n_frags&quot;</span><span class="p">])</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">])</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;length_dist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;length_dist&quot;</span><span class="p">]</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;tss_profile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;tss_profile&quot;</span><span class="p">]</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;nfr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;nfr&quot;</span><span class="p">])</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;median_var&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;median_var&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Write fragments profile</span>
+    <span class="n">h5_frag_profile</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;frag_profile&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_frag_profile</span><span class="p">,</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;frag_profile&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write CNV loglik</span>
+    <span class="n">h5_loglik</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;hmm_loglik&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_loglik</span><span class="p">,</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;hmm_loglik&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write CNV segments</span>
+    <span class="n">h5_segments</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;segments_df&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_segments</span><span class="p">,</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;segments_df&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write CNV bins</span>
+    <span class="n">h5_bins</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_bins</span><span class="p">,</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s2">&quot;seqnames&quot;</span><span class="p">,</span><span class="s2">&quot;start&quot;</span><span class="p">,</span><span class="s2">&quot;end&quot;</span><span class="p">,</span><span class="s2">&quot;ratios&quot;</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write WPS bins</span>
+    <span class="n">h5_wps_bins</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;wps_bins&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_wps_bins</span><span class="p">,</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;wps_bins&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write WPS peak dist</span>
+    <span class="n">h5_peak_dist</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;peak_dist&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_peak_dist</span><span class="p">,</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;peak_dist&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write TSS nfr</span>
+    <span class="n">h5_tss_nfr</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_tss_nfr</span><span class="p">,</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s2">&quot;seqnames&quot;</span><span class="p">,</span><span class="s2">&quot;start&quot;</span><span class="p">,</span><span class="s2">&quot;end&quot;</span><span class="p">,</span><span class="s2">&quot;nfr&quot;</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write TSS pos_score</span>
+    <span class="n">h5_pos_score</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;tss_pos_score&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_pos_score</span><span class="p">,</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s2">&quot;seqnames&quot;</span><span class="p">,</span><span class="s2">&quot;start&quot;</span><span class="p">,</span><span class="s2">&quot;end&quot;</span><span class="p">,</span><span class="s2">&quot;pos_score&quot;</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write chrom shift</span>
+    <span class="n">h5_chrom_shift</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">chrom_shift</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                                <span class="n">index</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_chrom_shift</span><span class="p">,</span> <span class="n">chrom_shift</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write genome_len</span>
+    <span class="n">h5_genome_len</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;genome_len&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">genome_len</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;genome_len&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                                <span class="n">index</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;genome_len&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_genome_len</span><span class="p">,</span> <span class="n">genome_len</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write WPS peaks</span>
+    <span class="n">h5_peaks</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;wps_peaks&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;wps_peaks&quot;</span><span class="p">]:</span>
+        <span class="n">chrom_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;wps_peaks&quot;</span><span class="p">][</span><span class="n">chrom</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">peak</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="s2">&quot;wps_peaks&quot;</span><span class="p">][</span><span class="n">chrom</span><span class="p">]):</span>
+            <span class="n">chrom_peaks</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">peak</span><span class="o">.</span><span class="n">start</span>
+            <span class="n">chrom_peaks</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">peak</span><span class="o">.</span><span class="n">end</span>
+        <span class="n">h5_peaks</span><span class="p">[</span><span class="n">chrom</span><span class="p">]</span> <span class="o">=</span> <span class="n">chrom_peaks</span>
+
+    <span class="c1"># Close file</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="write_multi_summary"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.write_multi_summary.html#cfdna.utilities.h5_utilities.write_multi_summary">[docs]</a><span class="k">def</span> <span class="nf">write_multi_summary</span><span class="p">(</span><span class="n">multi_summary</span><span class="p">,</span> <span class="n">output_h5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write h5 multi_summary metrics</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        multi_summary</span>
+<span class="sd">            dict</span>
+<span class="sd">        output_h5</span>
+<span class="sd">            str</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Open h5 file</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">output_h5</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Write descriptions</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;n_frags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;n_frags&quot;</span><span class="p">])</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">])</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;length_dist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;length_dist&quot;</span><span class="p">]</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;tss_profile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;tss_profile&quot;</span><span class="p">]</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;nfr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;nfr&quot;</span><span class="p">])</span>
+    <span class="n">output</span><span class="p">[</span><span class="s2">&quot;median_var&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;median_var&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Write fragments profile</span>
+    <span class="n">h5_frag_profile</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;frag_profile&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_frag_profile</span><span class="p">,</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;frag_profile&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write CNV bins</span>
+    <span class="n">h5_bins</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_bins</span><span class="p">,</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write WPS bins</span>
+    <span class="n">h5_wps_bins</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;wps_bins&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_wps_bins</span><span class="p">,</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;wps_bins&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write WPS peak dist</span>
+    <span class="n">h5_peak_dist</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;peak_dist&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_peak_dist</span><span class="p">,</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;peak_dist&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write TSS nfr</span>
+    <span class="n">h5_tss_nfr</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_tss_nfr</span><span class="p">,</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write TSS pos_score</span>
+    <span class="n">h5_pos_score</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;tss_pos_score&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_pos_score</span><span class="p">,</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write chrom shift</span>
+    <span class="n">h5_chrom_shift</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">chrom_shift</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                                <span class="n">index</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">write_h5_DataFrame</span><span class="p">(</span><span class="n">h5_chrom_shift</span><span class="p">,</span> <span class="n">chrom_shift</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write CNV loglik</span>
+    <span class="n">h5_loglik</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;hmm_loglik&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_list_df</span><span class="p">(</span><span class="n">h5_loglik</span><span class="p">,</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;hmm_loglik&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Write CNV segments</span>
+    <span class="n">h5_segments</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;segments_df&quot;</span><span class="p">,</span> <span class="n">track_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_h5_list_df</span><span class="p">(</span><span class="n">h5_segments</span><span class="p">,</span> <span class="n">multi_summary</span><span class="p">[</span><span class="s2">&quot;segments_df&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Close file</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="c1">######################################</span>
+<span class="c1">#     Read methods</span>
+<span class="c1">######################################</span>
+
+
+<div class="viewcode-block" id="read_h5_DataFrame"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.read_h5_DataFrame.html#cfdna.utilities.h5_utilities.read_h5_DataFrame">[docs]</a><span class="k">def</span> <span class="nf">read_h5_DataFrame</span><span class="p">(</span><span class="n">h5_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read pandas.DataFrame from h5py group</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        h5_group</span>
+<span class="sd">            h5py.Group</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        df</span>
+<span class="sd">            pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define dtype categories</span>
+    <span class="n">numeric_dtypes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;i&#39;</span><span class="p">,</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">])</span>
+    <span class="n">string_dtypes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;O&#39;</span><span class="p">,</span><span class="s1">&#39;U&#39;</span><span class="p">,</span><span class="s1">&#39;S&#39;</span><span class="p">])</span>
+    
+    <span class="c1"># Record axis</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_group</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]))</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_group</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">])</span>
+    
+    <span class="c1"># Read index</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_group</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]),</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="n">string_dtypes</span><span class="p">:</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        
+    <span class="c1"># Read columns</span>
+    <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h5_group</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]),</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="n">string_dtypes</span><span class="p">:</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># Convert numpy object to str</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;O&quot;</span><span class="p">:</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="read_h5_list_df"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.read_h5_list_df.html#cfdna.utilities.h5_utilities.read_h5_list_df">[docs]</a><span class="k">def</span> <span class="nf">read_h5_list_df</span><span class="p">(</span><span class="n">h5_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read list of pd.DataFrames to h5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        h5_group</span>
+<span class="sd">            h5py.Group</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        record</span>
+<span class="sd">            list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Iterate over list</span>
+    <span class="n">record</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">h5_group</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">h5_group</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">record</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">record</span></div>
+
+
+<div class="viewcode-block" id="read_summary"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.read_summary.html#cfdna.utilities.h5_utilities.read_summary">[docs]</a><span class="k">def</span> <span class="nf">read_summary</span><span class="p">(</span><span class="n">h5_filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read summary formatted h5 file to dictionary</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        h5_filename</span>
+<span class="sd">            str</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        metrics</span>
+<span class="sd">            dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Open h5 file</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Initialize metrics</span>
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;n_frags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;n_frags&quot;</span><span class="p">]))</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">]))</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;median_var&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;median_var&quot;</span><span class="p">]))</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;length_dist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;length_dist&quot;</span><span class="p">])</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;nfr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;nfr&quot;</span><span class="p">]))</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;tss_profile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;tss_profile&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Read DataFrames</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;frag_profile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;frag_profile&quot;</span><span class="p">])</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;hmm_loglik&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;hmm_loglik&quot;</span><span class="p">])</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;segments_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;segments_df&quot;</span><span class="p">])</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;peak_dist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;peak_dist&quot;</span><span class="p">])</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">])</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;tss_pos_score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;tss_pos_score&quot;</span><span class="p">])</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;wps_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;wps_bins&quot;</span><span class="p">])</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">])</span>
+    <span class="c1"># Remove nans</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="s2">&quot;ratios&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">),:]</span>
+    
+    <span class="c1"># Read DataFrame to dict</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;genome_len&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;genome_len&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Read Intervals</span>
+    <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;wps_peaks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;wps_peaks&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;wps_peaks&quot;</span><span class="p">][</span><span class="n">chrom</span><span class="p">]</span> <span class="o">=</span> <span class="n">AIList</span><span class="p">()</span>
+        <span class="n">intervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;wps_peaks&quot;</span><span class="p">][</span><span class="n">chrom</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;wps_peaks&quot;</span><span class="p">][</span><span class="n">chrom</span><span class="p">]</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">intervals</span><span class="p">[</span><span class="mi">1</span><span class="p">,:],</span>
+                                               <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">intervals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                               <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">intervals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        
+    <span class="c1"># Close h5 file</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">metrics</span></div>
+
+
+<div class="viewcode-block" id="append_metrics"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.append_metrics.html#cfdna.utilities.h5_utilities.append_metrics">[docs]</a><span class="k">def</span> <span class="nf">append_metrics</span><span class="p">(</span><span class="n">metrics1</span><span class="p">,</span> <span class="n">metrics2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Append two cfDNA_summary h5 file dictionaries</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        metrics1</span>
+<span class="sd">            dict</span>
+<span class="sd">        metrics2</span>
+<span class="sd">            dict</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        total_metrics</span>
+<span class="sd">            dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Initialize total_metrics</span>
+    <span class="n">total_metrics</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Find sam filenames</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics1</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">sam_fn1</span> <span class="o">=</span> <span class="n">metrics1</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sam_fn1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">metrics1</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">sam_fn2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">metrics2</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Merge bin_size</span>
+    <span class="k">if</span> <span class="n">metrics1</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">metrics2</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Bin sizes are not the same&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">total_metrics</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics1</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Merge genome</span>
+    <span class="k">if</span> <span class="n">metrics1</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">metrics2</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Genomes used are not the same&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">total_metrics</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics1</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Merge attributes</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">,</span> <span class="s2">&quot;n_frags&quot;</span><span class="p">,</span> <span class="s2">&quot;nfr&quot;</span><span class="p">,</span> <span class="s2">&quot;median_var&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
+        <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metrics2</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="c1"># Merge distributions</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;length_dist&quot;</span><span class="p">,</span> <span class="s2">&quot;tss_profile&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">metrics2</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+        <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">][:,:</span><span class="n">length</span><span class="p">],</span>
+                                        <span class="n">metrics2</span><span class="p">[</span><span class="n">key</span><span class="p">][:</span><span class="n">length</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span>
+                                        <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Merge DataFrames</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;frag_profile&quot;</span><span class="p">,</span> <span class="s2">&quot;peak_dist&quot;</span><span class="p">,</span> <span class="s2">&quot;tss_nfr&quot;</span><span class="p">,</span> <span class="s2">&quot;tss_pos_score&quot;</span><span class="p">,</span> <span class="s2">&quot;wps_bins&quot;</span><span class="p">,</span> <span class="s2">&quot;cnv_bins&quot;</span><span class="p">]:</span>
+        <span class="c1"># Change column names if first DataFrame</span>
+        <span class="k">if</span> <span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;seqnames&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="n">sam_fn1</span><span class="p">]</span>
+        <span class="c1"># Take first two columns</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s2">&quot;seqnames&quot;</span><span class="p">,</span><span class="s2">&quot;start&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">metrics2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s2">&quot;seqnames&quot;</span><span class="p">,</span><span class="s2">&quot;start&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># Append first two columns with _</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">m1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">m1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">m2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">m2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+        <span class="c1"># Find which are in common</span>
+        <span class="n">in_ab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">in_ba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+        <span class="c1"># Set metrics values</span>
+        <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">in_ab</span><span class="p">,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">sam_fn2</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">in_ba</span><span class="p">,:]</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Append hmm_loglik</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;hmm_loglik&quot;</span><span class="p">,</span> <span class="s2">&quot;segments_df&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">metrics1</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
+        <span class="n">total_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metrics2</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">total_metrics</span></div>
+
+
+<div class="viewcode-block" id="read_multi_summary"><a class="viewcode-back" href="../../../api/cfdna.utilities.h5_utilities.read_multi_summary.html#cfdna.utilities.h5_utilities.read_multi_summary">[docs]</a><span class="k">def</span> <span class="nf">read_multi_summary</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read multi_summary h5 file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        data</span>
+<span class="sd">            list or str</span>
+<span class="sd">        directory</span>
+<span class="sd">            str</span>
+<span class="sd">        verbose</span>
+<span class="sd">            bool</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        metrics</span>
+<span class="sd">            dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># List provided</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="c1"># Determine h5_filenames</span>
+        <span class="n">h5_filenames</span> <span class="o">=</span> <span class="n">find_h5_filenames</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
+
+        <span class="c1"># Initialize progress bar</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">progress_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">h5_filenames</span><span class="p">)</span>
+            <span class="n">printProgressBar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">progress_length</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;Progress:&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;Complete&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+        <span class="c1"># Read first h5 file</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">read_summary</span><span class="p">(</span><span class="n">h5_filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># Store chrom_shift, only want 1</span>
+        <span class="n">chrom_shift</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Update progress bar</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">printProgressBar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress_length</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;Progress:&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;Complete&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+        <span class="c1"># Iterate over other h5 files</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">h5_filename</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">h5_filenames</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="n">metrics_tmp</span> <span class="o">=</span> <span class="n">read_summary</span><span class="p">(</span><span class="n">h5_filename</span><span class="p">)</span>
+
+            <span class="c1"># Merge metrics</span>
+            <span class="n">metrics</span> <span class="o">=</span> <span class="n">append_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">metrics_tmp</span><span class="p">)</span>
+
+            <span class="c1"># Update Progress Bar</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="n">printProgressBar</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">progress_length</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;Progress:&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;Complete&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+        <span class="c1"># Re-assign chrom_shift</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chrom_shift</span>
+
+    <span class="c1"># h5 file name provided</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+
+        <span class="c1"># Open h5 file</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize metrics</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;sam&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;n_frags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;n_frags&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;bin_size&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;median_var&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;median_var&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;genome&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;length_dist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;length_dist&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;nfr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;nfr&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;tss_profile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;tss_profile&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Read DataFrames</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;frag_profile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;frag_profile&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;peak_dist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;peak_dist&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;tss_nfr&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;tss_pos_score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;tss_pos_score&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;wps_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;wps_bins&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;cnv_bins&quot;</span><span class="p">])</span>
+        
+        <span class="c1"># Read DataFrame to dict</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_DataFrame</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;chrom_shift&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Read list of DataFrames</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;hmm_loglik&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_list_df</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;hmm_loglik&quot;</span><span class="p">])</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;segments_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_h5_list_df</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;segments_df&quot;</span><span class="p">])</span>
+            
+        <span class="c1"># Close h5 file</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">metrics</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Kyle S. Smith.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
