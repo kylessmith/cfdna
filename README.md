@@ -1,9 +1,9 @@
-# Next Generation Sequencing fragment manipulation
+# Cell-free DNA analysis toolkit
 
-[![Build Status](https://travis-ci.org/kylessmith/NGSfragments.svg?branch=master)](https://travis-ci.org/kylessmith/NGSfragments) [![PyPI version](https://badge.fury.io/py/NGSfragments.svg)](https://badge.fury.io/py/NGSfragments)
+[![Build Status](https://travis-ci.org/kylessmith/cfdna.svg?branch=master)](https://travis-ci.org/kylessmith/cfdna) [![PyPI version](https://badge.fury.io/py/cfdna.svg)](https://badge.fury.io/py/cfdna)
 
-This is a Python package for easy and efficient manipulation
-of Next Generation Sequencing reads.
+This is a Python package for easy and efficient cell-free
+DNA analysis.
 
 
 ## Install
@@ -22,15 +22,15 @@ Dependencies can be installed by:
 
 PyPI install, presuming you have all its requirements installed:
 ```
-    pip install NGSfragments
+    pip install cfdna
 ```
 
 ## Usage
 
 ```python
-from NGSfragments import fragments
+from cfdna import cfDNA
 import numpy as np
 
 # Create data
-frags = fragments("test_bam.bam", verbose=True)
+cf = cfDNA("test_bam.bam", verbose=True)
 ```
