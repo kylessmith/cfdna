@@ -1,18 +1,7 @@
-from . import plot_plt
-from . import plot_bokeh
+from .plot_plt import *
 
-__doc__="""\
 
+__doc__="""
 Plotting API
 ============
-.. currentmodule:: cfDNA
-
-Generic
--------
-.. autosummary::
-   :toctree: .
-
-   plot_plt
-   plot_bokeh
-
 """

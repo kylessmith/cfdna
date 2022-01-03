@@ -29,7 +29,7 @@ if sys.version_info < (2,7):
 
 import os
 
-from setuptools import setup, find_namespace_packages
+from setuptools import setup, find_namespace_packages, find_packages
 
 
 # Gather user-defined data files
@@ -97,10 +97,10 @@ setup(
                     "Topic :: Scientific/Engineering :: Bio-Informatics"
                   ],
     setup_requires = ["numpy","ngsfragments"],
-    install_requires = ["numpy","ngsfragments"],
+    install_requires = ["numpy","ngsfragments","h5py","pandas"],
     provides = ["cfdna"],
     keywords = ["next generation sequencing fragment cfDNA cell free DNA"],
-    packages = find_namespace_packages(include=["cfdna", "cfdna.*"]),
+    packages = find_packages(),
     package_data={'cfdna': ['*.pxd', '*.pyx', '*.c', '*.h']},
     # Disable zip_safe
     zip_safe = False,

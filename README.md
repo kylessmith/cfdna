@@ -5,6 +5,8 @@
 This is a Python package for easy and efficient cell-free
 DNA analysis.
 
+All citations should reference to [original paper][paper].
+
 
 ## Install
 
@@ -28,9 +30,26 @@ PyPI install, presuming you have all its requirements installed:
 ## Usage
 
 ```python
-from cfdna import cfDNA
+import cfdna as cf
 import numpy as np
 
 # Create data
-cf = cfDNA("test_bam.bam", verbose=True)
+cfdata = cf.cfDNA()
+frags = cf.io.readBAM("test.bam")
+
+# Call CNVs
+cf.proc.call_cnv_pipline(cfdata, frags)
+
+# Plot CNVs
+cf.pl.plot_cnv(cfdata, "test.bam")
 ```
+
+Run from the commadline:
+
+```
+    python -m cfdna callCNVs --bam test.bam --segs
+```
+
+This will output a .png plot and seg file.
+
+[paper]: https://www.cell.com/cancer-cell/pdfExtended/S1535-6108(21)00501-8

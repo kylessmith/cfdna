@@ -1,15 +1,18 @@
-from .h5_utilities import *
+from .summarize import *
+
 
 __doc__="""\
 
-H5 Utilities API
+Processing API
 ============
+.. currentmodule:: cfDNA
 
 Generic
 -------
 .. autosummary::
    :toctree: .
 
-   h5_utilities
+   nfr
+   wps
 
 """
