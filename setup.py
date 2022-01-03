@@ -8,7 +8,9 @@ libname = "cfdna"
 
 # Descriptions of package
 SHORTDESC = "Python package for fragment manipulation for cfDNA"
-DESC = """A python package for fragment manipulation for cfDNA."""
+#DESC = """A python package for fragment manipulation for cfDNA."""
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 # Directories (relative to the top-level directory where setup.py resides) in which to look for data files.
 datadirs  = ("tests", "data")
@@ -76,7 +78,8 @@ setup(
     author_email = "kyle.smith@stjude.org",
     url = "https://github.com/kylessmtih/cfdna",
     description = SHORTDESC,
-    long_description = DESC,
+    long_description = long_description,
+    long_description_content_type = "text/markdown",
     # CHANGE THIS
     license = "GPL2",
     # free-form text field
@@ -85,7 +88,6 @@ setup(
                     "Environment :: Console",
                     "Intended Audience :: Developers",
                     "Intended Audience :: Science/Research",
-                    "License :: GPL2", 
                     "Operating System :: POSIX :: Linux",
                     "Programming Language :: Python",
                     "Programming Language :: Python :: 3",
