@@ -1,6 +1,6 @@
 # Cell-free DNA analysis toolkit
 
-[![Build Status](https://travis-ci.org/kylessmith/cfdna.svg?branch=master)](https://travis-ci.org/kylessmith/cfdna) [![PyPI version](https://badge.fury.io/py/cfdna.svg)](https://badge.fury.io/py/cfdna)[![DOI](https://zenodo.org/badge/400817892.svg)](https://zenodo.org/badge/latestdoi/400817892)
+[![Build Status](https://travis-ci.org/kylessmith/cfdna.svg?branch=master)](https://travis-ci.org/kylessmith/cfdna) [![PyPI version](https://badge.fury.io/py/cfdna.svg)](https://badge.fury.io/py/cfdna) [![DOI](https://zenodo.org/badge/400817892.svg)](https://zenodo.org/badge/latestdoi/400817892)
 
 This is a Python package for easy and efficient cell-free
 DNA analysis.
