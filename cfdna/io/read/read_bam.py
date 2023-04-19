@@ -1,9 +1,17 @@
-from ngsfragments import fragments
+from ngsfragments import Fragments
+import ngsfragments as ngs
 
 
-def readBam(bam_filename, min_size=10, max_size=1000,
-            paired=True, qcfail=False, mapq_cutoff=25,
-            proportion=1.0, verbose=False):
+def readBam(bam_filename: str,
+            min_size: int = 10,
+            max_size: int = 1000,
+            paired: bool = True,
+            qcfail: bool = False,
+            mapq_cutoff: int = 25,
+            proportion: float = 1.0,
+            n_frags: int = None,
+            nthreads: int = 1,
+            verbose: bool = False) -> Fragments:
     """
     Read BAM file
 
@@ -34,8 +42,15 @@ def readBam(bam_filename, min_size=10, max_size=1000,
     """
 
     # Read fragments from bam file
-    frags = fragments(bam_filename, min_size=min_size, max_size=max_size,
-                        paired=paired, qcfail=qcfail, mapq_cutoff=mapq_cutoff, verbose=verbose,
-                        proportion=proportion)
+    frags = ngs.read_sam.from_sam(bam_filename,
+                                    min_size = min_size,
+                                    max_size = max_size,
+                                    paired = paired,
+                                    qcfail = qcfail,
+                                    mapq_cutoff = mapq_cutoff,
+                                    verbose = verbose,
+                                    proportion = proportion,
+                                    n_frags = n_frags,
+                                    nthreads = nthreads)
 
     return frags

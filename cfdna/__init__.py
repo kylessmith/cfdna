@@ -1,16 +1,16 @@
 from __future__ import absolute_import
-from .core.cfDNA import cfDNA
+from .core.core import cfDNA
 from . import plot as pl
 from . import io
 from . import commandline as cmd
 from . import utilities as utils
 from . import processing as proc
 
-from ngsfragments import fragments
+from ngsfragments import Fragments
 
 
 # This is extracted automatically by the top-level setup.py.
-__version__ = '1.0.0'
+__version__ = '2.0.0'
 
 __author__ = "Kyle S. Smith"
 

@@ -77,10 +77,17 @@ def write_h5_DataFrame(h5_group, df, axis=0):
 
     # Iterate over columns
     if axis == 1:
-        if df.index.dtype.kind == "i":
+        if df.columns.dtype.kind == "i":
             index_dtypes = "i"
+        elif isinstance(df.columns, pd.MultiIndex):
+            index_dtypes = {}
+            for level in range(df.columns.nlevels):
+                if df.columns.get_level_values(level).dtype.kind == "i":
+                    index_dtypes["level_"+str(level)] = "i"
+                else:
+                    index_dtypes["level_"+str(level)] = "<S{}".format(df.columns.get_level_values(level).str.len().max())
         else:
-            index_dtypes = "<S{}".format(df.index.str.len().max())
+            index_dtypes = "<S{}".format(df.columns.str.len().max())
         
         #if df.columns.dtype.kind == "i":
         #    columns_dtypes = "<S{}".format(df.columns.str.len().max())

@@ -1,11 +1,19 @@
-import ngsfragments as ngs
 import numpy as np
 import pandas as pd
 import ngsfragments as ngs
 import os
 
+# Local imports
+from ...core.core import cfDNA
 
-def fragment_profile(cfdna_object, frags, bin_size=100000, bin_bias_h5_fn=None, bias_correct=True, smooth=True, verbose=False):
+
+def fragment_profile(cfdna_object: cfDNA,
+                     frags: ngs.Fragments,
+                     bin_size: int = 100000,
+                     bin_bias_h5_fn: str = None,
+                     bias_correct: bool = True,
+                     smooth: bool = True,
+                     verbose: bool = False):
    """
    Determine fragment profile (ratio of large fragments to small fragments)
 
@@ -36,8 +44,7 @@ def fragment_profile(cfdna_object, frags, bin_size=100000, bin_bias_h5_fn=None, 
    file_name = path.split(os.sep)[-1]
 
    # Check if file was previously annotated
-   if file_name not in cfdna_object.filenames:
-      cfdna_object.log_filename(frags)
+   cfdna_object.log_fragments(frags)
 
    # Calculate coverage of small and large fragments
    small_bin_coverage = frags.bin_counts(bin_size=bin_size, min_length=100, max_length=150)
@@ -63,4 +70,4 @@ def fragment_profile(cfdna_object, frags, bin_size=100000, bin_bias_h5_fn=None, 
    fragment_profile.df.loc[pd.isnull(fragment_profile.loc[:,file_name].values), file_name] = 1.0
    
    # Append bins
-   cfdna_object.add_intervals("frag_profile", file_name, fragment_profile)
+   cfdna_object.add_intervals("frag_profile", fragment_profile)

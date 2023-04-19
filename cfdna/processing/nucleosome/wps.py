@@ -1,10 +1,15 @@
-def wps(frags, protection=120, min_length=120, max_length=210, normalize=True, norm_method="mean"):
+import ngsfragments as ngs
+
+
+def wps(frags, chrom=None, protection=120, min_length=120, max_length=210, normalize=True, norm_method="mean"):
     """
     Calculate Window Protection Score (WPS)
 
     Parameters
     ----------
-        chrom : str
+        frags : ngsfragments.fragments
+            Fragments object
+        chroms : str or list
             Name of chromosome
         protection : int
             Protection window
@@ -19,16 +24,49 @@ def wps(frags, protection=120, min_length=120, max_length=210, normalize=True, n
 
     Returns
     -------
-        wps : pandas.Series
+        wps_score : pandas.Series
             Window protection scores
     """
     
     # Caclulate WPS
-    wps = frags.wps(protection=protection, min_length=min_length, max_length=max_length)
+    wps_score = frags.wps(chrom=chrom, protection=protection, min_length=min_length, max_length=max_length)
     if normalize:
-        utilities.normalize_wps(wps, method=norm_method)
+        ngs.utilities.normalize_wps(wps_score, method=norm_method)
 
-    return wps
+    return wps_score
+
+
+def coverage(frags, chrom=None, min_length=120, max_length=210, normalize=True, norm_method="mean"):
+    """
+    Calculate Window Protection Score (WPS)
+
+    Parameters
+    ----------
+        frags : ngsfragments.fragments
+            Fragments object
+        chroms : str or list
+            Name of chromosome
+        min_length : int
+            Minimum DNA fragment length
+        max_length : int
+            Maximum fragment length
+        normalize : bool
+            Whether to normalize
+        norm_method : str
+            Normalization method
+
+    Returns
+    -------
+        cov : pandas.Series
+            Coverage
+    """
+    
+    # Caclulate coverage
+    cov = frags.coverage(chrom=chrom, min_length=min_length, max_length=max_length)
+    if normalize:
+        ngs.utilities.normalize_wps(cov, method=norm_method)
+
+    return cov
 
 
 def predict_nucleosomes(self, fragments, wps=None, protection=120, merge_distance=5,
@@ -113,38 +151,3 @@ def peak_distances(self, fragments, peaks=None, bin_size=100000, max_distance=10
 
     return p_dist
 
-
-import ngsfragments as ngs
-
-
-def wps(frags, protection=120, min_length=120, max_length=210, normalize=True, norm_method="mean"):
-    """
-    Calculate Window Protection Score (WPS)
-
-    Parameters
-    ----------
-        chrom : str
-            Name of chromosome
-        protection : int
-            Protection window
-        min_length : int
-            Minimum DNA fragment length
-        max_length : int
-            Maximum fragment length
-        normalize : bool
-            Whether to normalize
-        norm_method : str
-            Normalization method
-
-    Returns
-    -------
-        wps : pandas.Series
-            Window protection scores
-    """
-    
-    # Caclulate WPS
-    wps = frags.wps(protection=protection, min_length=min_length, max_length=max_length)
-    if normalize:
-        ngs.utilities.normalize_wps(wps, method=norm_method)
-
-    return wps

@@ -3,7 +3,7 @@ import glob
 import numpy as np
 import pandas as pd
 import h5py
-from ..core.cfDNA import cfDNA
+from ..core.core import cfDNA
 from ..io.read.read_h5 import read_h5
 from ..io.write.write_h5 import write_h5
 
@@ -84,13 +84,14 @@ def find_h5_filenames(names_list, directory="./"):
 
 def update_h5(reference_h5, query_h5):
     """
+    Go through and update h5 in place
     """
 
     # Open files
     ref = h5py.File(reference_h5, "r+")
     query = h5py.File(query_h5, "r")
 
-    
+    pass
 
 
 def copy_h5(h5_filename, output_h5):

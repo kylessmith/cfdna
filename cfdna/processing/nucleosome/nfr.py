@@ -3,7 +3,10 @@ import numpy as np
 from intervalframe import IntervalFrame
 import pandas as pd
 import os
+
+# Local imports
 from ...utilities.h5_utilities import printProgressBar
+from .wps import wps
 
 
 def calculate_nfr(scores, score_name=None, bed_fn="hg19_TSS.bed", upstream=1000, downstream=1000, stranded=False):
@@ -38,11 +41,12 @@ def window_mean_scores(frags, values, bed_fn="hg19_TSS.bed", upstream=1000, down
     """
 
     # Check if bed_fn is in data directory
-    if os.path.exists(os.path.join(frags.data_dir, bed_fn)):
-        bed_fn = os.path.join(frags.data_dir, bed_fn)
-    else:
-        if ~os.path.exists(bed_fn):
-            raise FileExistsError("bed_fn does not exist!")
+    bed_fn = ngs.data.get_data_file(bed_fn)
+    #if os.path.exists(os.path.join(frags.data_dir, bed_fn)):
+        #bed_fn = os.path.join(frags.data_dir, bed_fn)
+    #else:
+        #if ~os.path.exists(bed_fn):
+            #raise FileExistsError("bed_fn does not exist!")
     
     # Calculate mean scores
     mean_values = frags.window_mean_scores(values, bed_fn, upstream=upstream, downstream=downstream, stranded=stranded)
@@ -80,11 +84,12 @@ def window_nfr(values, bed_fn="hg19_TSS.bed", upstream=1000, downstream=1000, st
     """
 
     # Check if bed_fn is in data directory
-    if os.path.exists(os.path.join(fragments.data_dir, bed_fn)):
-        bed_fn = os.path.join(fragments.data_dir, bed_fn)
-    else:
-        if ~os.path.exists(bed_fn):
-            raise FileExistsError("bed_fn does not exist!")
+    bed_fn = ngs.data.get_data_file(bed_fn)
+    #if os.path.exists(os.path.join(fragments.data_dir, bed_fn)):
+        #bed_fn = os.path.join(fragments.data_dir, bed_fn)
+    #else:
+        #if ~os.path.exists(bed_fn):
+            #raise FileExistsError("bed_fn does not exist!")
 
     # Calculate scores
     scores = ngs.utilities.window_scores(values, bed_fn=bed_fn, upstream=upstream, downstream=downstream, stranded=stranded)
@@ -155,26 +160,16 @@ def peak_distances(cfdna_object, frags, peaks=None, bin_size=100000, max_distanc
         peaks = predict_nucleosomes(cfdna_object, frags)
 
     # Create p_dist IntervalFrame
-    starts = np.array([],dtype=int)
-    chroms = np.array([], dtype="U25")
-    for chrom in peaks:
-        new_starts = np.arange(0, cfdna_object.chrom_lengths[chrom] + bin_size, bin_size)
-        starts = np.append(starts, new_starts)
-        chroms = np.append(chroms, np.repeat(chrom, len(new_starts)))
-    ends = starts + bin_size
-    p_dist = IntervalFrame.from_array(starts, ends, labels=chroms)
+    p_dist = IntervalFrame.from_dict_range(frags.genome, bin_size)
 
     # Iterate over intervals
     p_dist.df.loc[:,"mean_dist"] = 0
-    for i, interval in enumerate(p_dist.index):
-        chrom = interval.label
-        try:
-            peaks[chrom]
-            overlaps = peaks[chrom].intersect(interval.start, interval.end, label=chrom)
+
+    for chrom in peaks:
+        o_gen = peaks[chrom].iter_intersect(p_dist.index)
+        for i, overlaps in enumerate(o_gen):
             if len(overlaps) > 3:
-                p_dist.df.loc[i,"mean_dist"] = np.mean(overlaps.extract_ends()[:-1] - overlaps.extract_starts()[1:])
-        except KeyError:
-            pass
+                p_dist.df.loc[i,"mean_dist"] = np.mean(overlaps.extract_ends() - overlaps.extract_starts())
 
     # Remove those greater than max_distance
     p_dist = p_dist.iloc[p_dist.df.loc[:,"mean_dist"].values < max_distance, :]
@@ -212,18 +207,22 @@ def summarize_nfr(cfdna_object, frags, key,
     for c, chrom in enumerate(cfdna_object.chroms):
         if progress_bar:
             printProgressBar(c, len(cfdna_object.chroms), "nfr summary " + key)
-        if verbose: print(chrom)
+        if verbose: print(chrom, flush=True)
         wps = frags.wps(chrom=chrom, protection=protection, min_length=min_length, max_length=max_length)
         ngs.utilities.normalize_wps(wps, method=method)
 
         # Calculate peaks
+        if verbose: print("    calling peaks", flush=True)
         peaks = ngs.utilities.wps_peaks(frags, wps, merge_distance=5, min_length=peak_min_length, max_length=peak_max_length)
+        if verbose: print("    calling peak distances", flush=True)
         peak_dist = peak_dist.concat([peak_distances(cfdna_object, frags, peaks,
                                                     bin_size=cnv_binsize,
                                                     max_distance=1000)])
 
         for i, bed_fn in enumerate(nfr_filenames):
+            if verbose: print(bed_fn, flush=True)
             title = bed_fn.split(".")[0]
+            if verbose: print("    calculating window scores", flush=True)
             scores = ngs.utilities.window_scores(wps, bed_fn=bed_fn, upstream=1000, downstream=1000, stranded=stranded[i], verbose=verbose)
             scores = scores.groupby(by=scores.index.values).mean()
             window_values = ngs.utilities.nfr_windows(scores, scale=True)
@@ -242,7 +241,7 @@ def summarize_nfr(cfdna_object, frags, key,
                 iterables = [[chrom], window_values.index.values]
                 index = pd.MultiIndex.from_product(iterables)
                 new_df = pd.DataFrame(window_values.values, index=index, columns=[file_name])
-                enrichment[title] = enrichment[title].append(new_df)
+                enrichment[title] = pd.concat([enrichment[title], new_df])
             
             mean_wps[title] += scores.values.sum(axis=0)
             n[title] += scores.shape[0]

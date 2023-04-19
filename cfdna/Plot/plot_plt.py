@@ -5,7 +5,6 @@ import matplotlib.gridspec as gridspec
 import seaborn as sns
 from scipy.stats import pearsonr, spearmanr, sem
 from scipy.signal import argrelmax
-from ngsfragments.plot import plot_plt2
 from ngsfragments.segment.correction import gaussian_smooth
 import os
 
@@ -164,7 +163,7 @@ def get_chrom_shift(chrom_lengths, chrom_order=None):
     return chrom_shift
 
 
-def plot_cnv(cfdna_object, key, cnv_column="median", title=None, show=True, save=None, ax=None):
+def plot_cnv(cfdna_object, obs, cnv_column="median", title=None, show=True, save=None, ax=None):
     """
     Plot the CNVs
     """
@@ -175,14 +174,14 @@ def plot_cnv(cfdna_object, key, cnv_column="median", title=None, show=True, save
             fig, ax = plt.subplots(figsize=(10,5), tight_layout=True)
 
     # Assign variables
-    cnvs = cfdna_object.obs_intervals["cnv_segments"][key]
+    cnvs = cfdna_object.obs_intervals[obs]["cnv_segments"]
     bins = cfdna_object.intervals["cnv_bins"]
 
     # Determine whether chroms are
     chroms = cnvs.index.unique_labels
 
     # Get chrom shift
-    chrom_shift = get_chrom_shift(cfdna_object.chrom_lengths, chroms)
+    chrom_shift = get_chrom_shift(cfdna_object.uns["chrom_lengths"], chroms)
 
     # Determine last position
     last_chrom = chroms[-1]
@@ -191,7 +190,7 @@ def plot_cnv(cfdna_object, key, cnv_column="median", title=None, show=True, save
 
     # Iterate over chroms
     for chrom in chroms:
-        chrom_bins = bins.loc[chrom, key]
+        chrom_bins = bins.loc[chrom, obs]
         shift = chrom_shift[chrom]
         ax.scatter(chrom_bins.index.extract_starts() + shift, chrom_bins.values, s=1, color="black")
         ax.axvline(x=shift, color="grey", linestyle="--", linewidth=1.0, solid_capstyle="round")
@@ -214,7 +213,7 @@ def plot_cnv(cfdna_object, key, cnv_column="median", title=None, show=True, save
     # Plot chromosome names
     text_x = []
     for chrom in chroms:
-        text_x.append(chrom_shift[chrom] + (cfdna_object.chrom_lengths[chrom] / 2))
+        text_x.append(chrom_shift[chrom] + (cfdna_object.uns["chrom_lengths"][chrom] / 2))
     ax.set_xticks(text_x)
     ax.set_xticklabels(chroms, rotation=90)
     
@@ -259,13 +258,13 @@ def plot_cnv(cfdna_object, key, cnv_column="median", title=None, show=True, save
     return ax
 
 
-def fragment_distribution(cfdna_object, key, title=None, show=True, save=None, ax=None):
+def fragment_distribution(cfdna_object, obs, title=None, show=True, save=None, ax=None):
     """
     Plot the fragment distribution
     """
 
     # Assign length dist
-    length_dist = cfdna_object.obs_values["length_dist"].loc[key,:].values
+    length_dist = cfdna_object.obs_values["length_dist"].loc[obs,:].values
     
     # Determine total distribution
     if isinstance(length_dist, dict):

@@ -98,7 +98,7 @@ setup(
                     "Topic :: Software Development :: Libraries :: Python Modules",
                     "Topic :: Scientific/Engineering :: Bio-Informatics"
                   ],
-    setup_requires = ["numpy","ngsfragments"],
+    setup_requires = ["numpy","ngsfragments","intervalframe","matplotlib","seaborn","bokeh","hmmCNV"],
     install_requires = ["numpy","ngsfragments","h5py","pandas"],
     provides = ["cfdna"],
     keywords = ["next generation sequencing fragment cfDNA cell free DNA"],

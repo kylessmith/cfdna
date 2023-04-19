@@ -1,4 +1,4 @@
-from .cfDNA import cfDNA
+from .core import cfDNA
 
 
 __doc__="""

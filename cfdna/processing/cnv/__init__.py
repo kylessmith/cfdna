@@ -1,4 +1,5 @@
 from .segmentation import *
+from .segmentation_lite import *
 
 
 __doc__="""\
