@@ -1,4 +1,4 @@
-from ..cnv.segmentation import call_cnv_pipeline
+from ..cnv.segmentation import call_cnvs
 from ..fragmentation.frag_pattern import fragment_profile
 from ..nucleosome.nfr import summarize_nfr
 from ...core.core import cfDNA
@@ -72,9 +72,9 @@ def summarize(cfdna_object: cfDNA,
 
     # Call CNVs
     if verbose: print("Running CNV pipeline...", flush=True)
-    call_cnv_pipeline(cfdna_object, frags, cnv_binsize=cnv_binsize, hmm_binsize=hmm_binsize, method=method, outlier_smooth=outlier_smooth,
-                         gauss_smooth=gauss_smooth, bcp_cutoff=bcp_cutoff, normal=normal, ploidy=ploidy, estimatePloidy=estimatePloidy,
-                         minSegmentBins=minSegmentBins, maxCN=maxCN, verbose=verbose)
+    cfdna_object = call_cnvs(cfdna_object, frags, cnv_binsize=cnv_binsize, hmm_binsize=hmm_binsize, method=method, outlier_smooth=outlier_smooth,
+                            gauss_smooth=gauss_smooth, bcp_cutoff=bcp_cutoff, normal=normal, ploidy=ploidy, estimatePloidy=estimatePloidy,
+                            minSegmentBins=minSegmentBins, maxCN=maxCN, verbose=verbose)
 
     # Determine fragmentation profile
     if verbose: print("Calculating fragment profile...", flush=True)

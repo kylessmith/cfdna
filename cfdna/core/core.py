@@ -23,7 +23,7 @@ class cfDNA(ProjectFrame):
                  obs: set = None,
                  uns: UnstructuredLookup = None,
                  params: UnstructuredLookup = None,
-                 ref_genome: str = "hg19"):
+                 genome_version: str = "hg19"):
         """
         Initialize cfDNA object
                  
@@ -31,8 +31,8 @@ class cfDNA(ProjectFrame):
         ----------
             frags : :class: `ngsfragments.ngsfragments` (default: None)
                 DNA fragment intervals from BAM file
-            ref_genome : str
-                Reference genome
+            genome_version : str
+                Reference genome version
             verbose : bool
                  Print process
                  
@@ -45,19 +45,19 @@ class cfDNA(ProjectFrame):
         super().__init__(anno, values, obs_values, intervals,
                          obs_intervals, obs, uns, params)
         
-        self.params["ref_genome"] = ref_genome
+        self.params["ref_genome"] = genome_version
 
 
     def log_fragments(self,
                       frags: Fragments) -> None:
         """
-        Log fragments
+        Log Fragments object to ProjectFrame
 
         Parameters
         ----------
-            frags : :class: `ngsfragments.ngsfragments`
-                DNA fragment intervals from BAM file
-        
+            frags : Fragments
+                Fragments object
+
         Returns
         -------
             None
@@ -72,23 +72,27 @@ class cfDNA(ProjectFrame):
         """
 
         # Determine name
-        #path = os.path.normpath(frags.sam_file)
-        #file_name = path.split(os.sep)[-1]
         file_name = frags.sam_file
+        sample_name = os.path.split(file_name)[-1].split(".bam")[0]
 
         # Check is file_name exists
-        if file_name in self.obs:
-            return
+        #if sample_name not in pf.obs:
+        self.add_obs(sample_name)
 
-        else:
-            # Find all file names
-            self.add_obs(file_name)
+        # Record
+        if "length_dist" not in self.values.keys or pd.isnull(self.values["length_dist"].loc[sample_name,:].values).all():
+            length_dist = frags.length_dist()
+            length_dist.name = sample_name
+            self.add_values("length_dist", length_dist)
 
-            # Record
-            self.values("length_dist", frags.length_dist())
-            self.add_anno("n_fragments", file_name, len(frags.frags))
-            self.uns["chrom_lengths"] = frags.genome
+        if "n_fragments" not in self.anno.columns or pd.isnull(self.anno.loc[sample_name, "n_fragments"]):
+            self.add_anno("n_fragments", sample_name, len(frags.frags))
+        
+        if "chrom_lengths" not in self.uns.keys:
+            self.uns["chrom_lengths"] = frags.genome.chrom_sizes
             self.uns["chroms"] = frags.chroms
 
+        if "chroms" not in self.uns.keys:
+            self.uns["chroms"] = frags.chroms
 
-        
+        return None

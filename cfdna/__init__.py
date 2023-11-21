@@ -3,8 +3,7 @@ from .core.core import cfDNA
 from . import plot as pl
 from . import io
 from . import commandline as cmd
-from . import utilities as utils
-from . import processing as proc
+from . import tools as tl
 
 from ngsfragments import Fragments
 
@@ -26,15 +25,6 @@ Central class
    :toctree: .
    
    cfDNA
-   
-   
-Utility functions
------------------
-
-.. autosummary::
-   :toctree: .
-   
-   utils.h5_utilities
 
 
 Plotting functions

@@ -1,0 +1,74 @@
+[tool.poetry]
+name = "cfdna"
+version = "2.1.0"
+description = "Python package for fragment manipulation for cfDNA"
+authors = ["Kyle S. Smith <kyle.smith@stjude.org>"]
+maintainers = ["Kyle S. Smith <kyle.smith@stjude.org>"]
+repository = "https://github.com/kylessmith/cfdna"
+documentation = "https://www.biosciencestack.com/static/cfdna/docs/index.html"
+keywords = ["cython", "interval", "cfdna", "c"]
+readme = 'README.md'
+license = "GPL-2.0-or-later"
+classifiers = [ "Development Status :: 4 - Beta",
+                    "Environment :: Console",
+                    "Intended Audience :: Developers",
+                    "Intended Audience :: Science/Research",
+                    "Operating System :: POSIX :: Linux",
+                    "Programming Language :: Cython",
+                    "Programming Language :: Python",
+                    "Programming Language :: Python :: 3",
+                    "Programming Language :: Python :: 3.6",
+                    "Topic :: Scientific/Engineering",
+                    "Topic :: Scientific/Engineering :: Mathematics",
+                    "Topic :: Software Development :: Libraries",
+                    "Topic :: Software Development :: Libraries :: Python Modules",
+                    "Topic :: Scientific/Engineering :: Bio-Informatics"
+                  ]
+packages = [{ include = "cfdna" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.23.5"
+cython = "^0.29.32"
+pandas = "^1.5.2"
+ailist = "^2.1.0"
+linear_segment = "^1.1.0"
+pysam = "^0.21.0"
+intervalframe = "^1.1.3"
+matplotlib = "^3.7.1"
+bokeh = "^3.1.0"
+scipy = "^1.9.1"
+statsmodels = "^0.13.5"
+seaborn = "^0.12.2"
+projectframe = "^1.0.0"
+hmmCNV = "^1.0.1"
+scikit-learn = "^1.2.2"
+ngsfragments = "^2.0.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0",
+            "cython>=0.29.32",
+            "numpy>=1.23.5",
+            "pandas>=1.5.2",
+            "setuptools>=65.5.0",
+            "ailist>=2.1.0",
+            "pysam>=0.20.0",
+            "hg19genome>=1.0.0",
+            "intervalframe>=1.1.3",
+            "ngsfragments>=2.0.7"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.build]
+generate-setup-file = false
+#script = "build.py"
+
+[tool.cibuildwheel]
+skip = "cp36-* cp37-* cp38-* cp39-* pp37-* pp38-* *-manylinux_i686 *_ppc64le *_s390x *-musllinux*"
+build-verbosity = "3"
+
+[tool.cython-lint]
+max-line-length = 100
+ignore = ['W191','E265','E303','E101','E128']
