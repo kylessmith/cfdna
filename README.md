@@ -16,6 +16,13 @@ If you dont already have numpy and scipy installed, it is best to download
     https://continuum.io/downloads
 ```
 
+Create environment and pip install:
+```
+    conda create -n cfdna python=3.11.3
+	conda activate cfdna
+	pip install cfdna==2.0.5
+```
+
 Dependencies can be installed by:
 
 ```
@@ -47,7 +54,7 @@ cf.pl.plot_cnv(cfdata, "test.bam")
 Run from the commadline:
 
 ```
-    python -m cfdna callCNVs --bam test.bam --segs
+    python -m cfdna callCNVs --bam test.bam --segs --genome hg19 --bin_size 100000
 ```
 
 This will output a .png plot and seg file.

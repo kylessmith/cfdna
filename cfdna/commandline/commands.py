@@ -61,4 +61,4 @@ def CNV_calling(args):
         ngs.plot.cnv_summary(cfdna_object,
                             list(cfdna_object.obs)[0],
                             show = False,
-                            save = prefix+"_cnv_plot.png")
+                            save = prefix+"_cnv_plot.pdf")
