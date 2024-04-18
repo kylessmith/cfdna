@@ -9,7 +9,7 @@ def gene_activity(frags: Fragments,
                   feature: str = "gene",
                   min_length: int = 120,
                   max_length: int = 220,
-                  verbose: bool = False):
+                  verbose: bool = False) -> cfDNA:
     """
     """
 
@@ -20,7 +20,7 @@ def gene_activity(frags: Fragments,
                                             min_length=min_length,
                                             max_length=max_length,
                                             verbose=verbose)
-    gene_activity = ngs.metric.correct_gene_activity(frags,
+    gene_activity = ngs.metrics.correct_gene_activity(frags,
                                                      gene_activity,
                                                      correct_cnv = False,
                                                      genome_version = genome_version,
@@ -29,3 +29,4 @@ def gene_activity(frags: Fragments,
 
     cfdna_object.add_values("gene_activity", gene_activity)
 
+    return cfdna_object

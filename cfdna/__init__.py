@@ -9,7 +9,7 @@ from ngsfragments import Fragments
 
 
 # This is extracted automatically by the top-level setup.py.
-__version__ = '2.0.5'
+__version__ = '2.0.7'
 
 __author__ = "Kyle S. Smith"
 

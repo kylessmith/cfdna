@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cfdna"
-version = "2.0.5"
+version = "2.0.7"
 description = "Python package for fragment manipulation for cfDNA"
 authors = ["Kyle S. Smith <kyle.smith@stjude.org>"]
 maintainers = ["Kyle S. Smith <kyle.smith@stjude.org>"]
@@ -29,12 +29,12 @@ packages = [{ include = "cfdna" }]
 [tool.poetry.dependencies]
 python = "^3.10"
 numpy = "^1.23.5"
-cython = "^0.29.32"
-pandas = "^1.5.2"
-ailist = "^2.1.0"
+cython = "^3.0.0"
+pandas = "^2.0.0"
+ailist = "^2.1.3"
 linear_segment = "^1.1.0"
 pysam = "^0.21.0"
-intervalframe = "^1.1.3"
+intervalframe = "^1.1.5"
 matplotlib = "^3.7.1"
 bokeh = "^3.1.0"
 scipy = "^1.9.1"
@@ -43,23 +43,23 @@ seaborn = "^0.12.2"
 projectframe = "^1.0.0"
 hmmCNV = "^1.0.1"
 scikit-learn = "^1.2.2"
-ngsfragments = "^2.1.1"
-genome_info = "^1.0.2"
+ngsfragments = "^2.1.5"
+genome_info = "^1.0.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0",
-            "cython>=0.29.32",
+            "cython>=3.0.0",
             "numpy>=1.23.5",
-            "pandas>=1.5.2",
+            "pandas>=2.0.0",
             "setuptools>=65.5.0",
-            "ailist>=2.1.0",
-            "pysam>=0.20.0",
-            "genome_info>=1.0.2",
-            "intervalframe>=1.1.3",
-            "ngsfragments>=2.1.1"]
+            "ailist>=2.1.3",
+            "pysam>=0.21.0",
+            "genome_info>=1.0.4",
+            "intervalframe>=1.1.5",
+            "ngsfragments>=2.1.5"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.build]
