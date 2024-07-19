@@ -11,91 +11,107 @@ from ...core.core import cfDNA
 
 
 def call_cnvs(cfdna_object: cfDNA,
-                data: List[str] | str | Fragments,
+                frags: Fragments,
                 cnv_binsize: int = 100000,
                 hmm_binsize: int = 1000000,
                 genome_version: str = "hg19",
                 nthreads: int = 1,
-                method: str = "online_both",
-                bcp_cutoff: float = 0.3,
-                hazard: int = 100,
-                shuffles: int = 5000,
-                p: float = 0.00005,
                 normal: List[float] = [0.1, 0.25, 0.5, 0.75, 0.9],
-                ploidy: List[int] = [2],
+                ploidy: List[int] = [2, 3],
                 estimatePloidy: bool = False,
                 minSegmentBins: int = 25,
                 maxCN: int = 5,
-                wgbs: bool = False,
-                verbose: bool = False,
-                **kwargs) -> ProjectFrame:
+                scStates: List[int] = None,
+                use_normal: bool = False,
+                add_sex: bool = False,
+                verbose: bool = False) -> cfDNA:
     """
     Call CNVs from fragments
+
+    This function corrects genome-wide bin coverage for GC, mappability, and black-listed regions.
+    Segments are determined using Bayesian Changepoint Segmentation and CNVs and purity  are called 
+    using an HMM model. 
 
     Parameters
     ----------
         cfdna_object : cfDNA
             cfDNA object
-        data : str | Fragments
-            Fragments object or SAM file
+        frags : Fragments
+            Fragments object
         cnv_binsize : int
-            Bin size for CNV calling
+            Size of bins for CNV calling (default: 100000)
         hmm_binsize : int
-            Bin size for HMM
+            Size of bins for HMM (default: 1000000)
         genome_version : str
-            Genome version
+            Reference genome version (default: "hg19")
         nthreads : int
-            Number of threads
-        method : str
-            Method for CNV calling
-        bcp_cutoff : float
-            BCP cutoff
-        hazard : int
-            Hazard
-        shuffles : int
-            Number of shuffles
-        p : float
-            P-value
-        normal : list
-            Normal values
-        ploidy : list
-            Ploidy values
+            Number of threads to use (default: 1)
+        normal : List[float]
+            List of normal fractions (default: [0.1, 0.25, 0.5, 0.75, 0.9])
+        ploidy : List[int]
+            List of ploidies (default: [2, 3])
         estimatePloidy : bool
-            Estimate ploidy
+            Estimate ploidy (default: False)
         minSegmentBins : int
-            Minimum segment bins
+            Minimum segment bins (default: 25)
         maxCN : int
-            Maximum copy number
-        wgbs : bool
-            Whole genome bisulfite sequencing
+            Maximum copy number (default: 5)
+        scStates : List[int]
+            List of states (default: None)
+        use_normal : bool
+            Use normal (default: False)
+        add_sex : bool
+            Add sex chromosomes (default: False)
         verbose : bool
-            Verbose
-        **kwargs : dict
-            Additional arguments
-    
+            Print process (default: False)
+        
     Returns
     -------
-        pf : ProjectFrame
-            ProjectFrame
+        cfdna_object : :class: `cfdna.cfDNA`
+            cfDNA object
+
+    Examples
+    --------
+    >>> import ngsfragments as ngs
+    >>> import cfdna
+    >>> frags = ngs.io.from_sam("test.bam", genome_version="hg19", nthreads=3)
+    >>> cfDNA = cfdna.cfDNA()
+    >>> cfDNA = cfdna.tools.cnv.call_cnvs(cfDNA,
+                                      frags,
+                                      cnv_binsize=100000,
+                                      hmm_binsize=1000000,
+                                      genome_version="hg19",
+                                      nthreads=3,
+                                      normal=[0.1, 0.25, 0.5, 0.75, 0.9],
+                                      ploidy=[2, 3],
+                                      estimatePloidy=False,
+                                      minSegmentBins=25,
+                                      maxCN=5,
+                                      scStates=None,
+                                      use_normal=False,
+                                      add_sex=True)
+    >>> cfDNA
+
+    See Also
+    --------
+    cfdna.cfDNA : cfDNA object
+
     """
     
     # Call CNVs
     cfdna_object = ngs.segment.cnv_pipeline.call_cnv_pipeline(cfdna_object,
-                                                        frags,
-                                                        cnv_binsize = cnv_binsize,
-                                                        hmm_binsize = hmm_binsize,
-                                                        genome_version = genome_version,
-                                                        nthreads = nthreads,
-                                                        method = method,
-                                                        bcp_cutoff = bcp_cutoff,
-                                                        hazard = hazard,
-                                                        shuffles = shuffles,
-                                                        p = p,
-                                                        normal = normal,
-                                                        ploidy = ploidy,
-                                                        estimatePloidy = estimatePloidy,
-                                                        minSegmentBins = minSegmentBins,
-                                                        maxCN = maxCN,
-                                                        verbose = verbose)
+                                                            frags,
+                                                            genome_version=genome_version,
+                                                            cnv_binsize=cnv_binsize,
+                                                            hmm_binsize=hmm_binsize,
+                                                            nthreads = nthreads,
+                                                            use_normal = use_normal,
+                                                            keep_sex_chroms = add_sex,
+                                                            normal = normal,
+                                                            ploidy = ploidy,
+                                                            estimatePloidy = estimatePloidy,
+                                                            scStates = scStates,
+                                                            minSegmentBins = minSegmentBins,
+                                                            maxCN = maxCN)
     
     return cfdna_object

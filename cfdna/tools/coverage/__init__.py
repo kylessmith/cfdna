@@ -1,4 +1,4 @@
-from .frag_pattern import *
+from .gene_activity import *
 
 
 __doc__="""\
@@ -12,6 +12,6 @@ Generic
 .. autosummary::
    :toctree: .
 
-   frag_pattern
+   gene_activity
 
 """

@@ -5,14 +5,16 @@ __doc__="""\
 
 IO API
 ============
-.. currentmodule:: cfDNA
+.. currentmodule:: cfdna
 
 Generic
 -------
 .. autosummary::
    :toctree: .
 
-   write_text
+   write_seg
+   write_anno
+   write_anno_seg
    write_h5
 
 """

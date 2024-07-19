@@ -5,14 +5,13 @@ __doc__="""\
 
 Processing API
 ============
-.. currentmodule:: cfDNA
+.. currentmodule:: cfdna
 
 Generic
 -------
 .. autosummary::
    :toctree: .
 
-   nfr
-   wps
+   summarize
 
 """

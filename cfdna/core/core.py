@@ -8,9 +8,9 @@ from projectframe import ProjectFrame, Frame, MultiFrame, MultiIntervalFrame, Un
 
 class cfDNA(ProjectFrame):
     """
-    Wrapper of fragments for cell-free DNA
+    Wrapper of ProjectFrame for cell-free DNA
 
-	:class:`~cfDNA.cfDNA` stores a fragments object
+	:class:`~cfdna.cfDNA` stores a fragments object
 
     """
 
@@ -29,12 +29,24 @@ class cfDNA(ProjectFrame):
                  
         Parameters
         ----------
-            frags : :class: `ngsfragments.ngsfragments` (default: None)
-                DNA fragment intervals from BAM file
+            anno : Frame
+                Annotation table
+            values : MultiFrame
+                Data table
+            obs_values : ObsFrame
+                Observed data table
+            intervals : MultiFrame
+                Interval table
+            obs_intervals : ObsIntervalFrame
+                Observed interval table
+            obs : set
+                Set of observed samples
+            uns : UnstructuredLookup
+                Unstructured data
+            params : UnstructuredLookup
+                Parameters
             genome_version : str
-                Reference genome version
-            verbose : bool
-                 Print process
+                Reference genome version (default: "hg19")
                  
         Returns
         -------
@@ -64,10 +76,10 @@ class cfDNA(ProjectFrame):
 
         Examples
         --------
-        >>> import ngsfragments
-        >>> import cfDNA
-        >>> frags = ngsfragments.Fragments("test.bam")
-        >>> cfDNA = cfDNA.cfDNA()
+        >>> import ngsfragments as ngs
+        >>> import cfdna
+        >>> frags = ngs.io.read_sam("test.bam", nthreads=3, genome_version="hg19")
+        >>> cfDNA = cfdna.cfDNA()
         >>> cfDNA.log_fragments(frags)
         """
 

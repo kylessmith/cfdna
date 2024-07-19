@@ -10,6 +10,21 @@ from bokeh.layouts import layout
 def fragment_distribution(length_dist, title=None, display=True, save_fn=None):
     """
     Plot the fragment distribution
+
+    Parameters
+    ----------
+        length_dist : dict
+            Dictionary of fragment lengths
+        title : str
+            Title of plot
+        display : bool
+            Display plot
+        save_fn : str
+            Save plot to file
+
+    Returns
+    -------
+        None
     """
     
     # Determine total distribution

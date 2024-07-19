@@ -2,7 +2,7 @@ from ngsfragments import Fragments
 import ngsfragments as ngs
 
 
-def readBam(bam_filename: str,
+def read_sam(bam_filename: str,
             min_size: int = 10,
             max_size: int = 1000,
             paired: bool = True,
@@ -31,6 +31,10 @@ def readBam(bam_filename: str,
             Minimum mapping quality allowed
         proportion : float
             Proportion of reads to keep
+        n_frags : int
+            Number of fragments to keep
+        nthreads : int
+            Number of threads to use
         verbose : bool
             Print process
     

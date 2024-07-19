@@ -14,8 +14,8 @@ import os
 import sys
 from pathlib import Path
 from datetime import datetime
-HERE = Path(__file__).parent
-sys.path[:0] = [str(HERE.parent), str(HERE / 'extensions')]
+#HERE = Path(__file__).parent
+#sys.path[:0] = [str(HERE.parent), str(HERE / 'extensions')]
 import cfdna
 #sys.path.append(os.path.abspath('../cfDNA'))
 #sys.path.insert(0, os.path.abspath('.'))
@@ -26,7 +26,7 @@ import cfdna
 project = 'cfdna'
 author = cfdna.__author__
 copyright = f'{datetime.now():%Y}, {author}.'
-version = cfdna.__version__.replace('.dirty', '')
+version = "2.1.2"
 release = version
 
 
@@ -41,7 +41,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 default_role = 'literal'
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-pygments_style = 'sphinx'
+#pygments_style = 'sphinx'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -51,6 +51,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'sphinx.ext.intersphinx',
               'sphinx.ext.napoleon',
+              'sphinx_autodoc_typehints',
               'scanpydoc'
           ]
 
@@ -86,11 +87,38 @@ intersphinx_mapping = dict(
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
-#html_theme = "pydata_sphinx_theme"
+#html_theme = 'sphinx_rtd_theme'
+html_theme = "pydata_sphinx_theme"
 #html_theme = 'scikit-learn-modern'
 
-html_theme_options = dict(navigation_depth=4)
+html_logo = "_static/logo.svg"
+
+html_theme_options = dict(github_url="https://github.com/kylessmith/cfdna",
+                          navigation_depth=4,
+                          google_analytics_id="UA-170691991-1",
+                          source_link_position= "footer",
+                          bootswatch_theme= "cerulean",
+                          navbar_title= "cfdna",
+                          navbar_sidebarrel= False,
+                          bootstrap_version= "3",
+                          nosidebar= True,
+                          body_max_width= '100%',
+                          external_links=[{"name":"Other tools",
+                                           "url":"https://www.biosciencestack.com/documentation/"}],
+                          show_prev_next=False,
+                          use_edit_page_button=True,
+                          search_bar_position="navbar",
+                          navbar_links= [
+                            ("API", "api/index"),
+                            ("Installation", "installation"),
+                            ("Tutorial", "tutorial"),
+                            ("BioscienceStack", "http://biosciencestack.com", True)
+                          ],
+                          logo = {"image_light": "_static/logo.svg",
+                                  "image_dark": "_static/logo.svg"},
+                        )
+
+html_sidebars = {"**": []}
 
 html_context = dict(
     display_github=True,  # Integrate GitHub
@@ -98,7 +126,7 @@ html_context = dict(
     github_repo='cfdna',  # Repo name
     github_version='master',  # Version
     conf_py_path='/doc/',  # Path in the checkout to the docs root
-    github_url="https://github.com/kylessmith/cfdna",
+    github_url="https://github.com",
 )
 
 # Add any paths that contain custom static files (such as style sheets) here,

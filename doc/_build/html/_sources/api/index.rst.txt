@@ -1,3 +1,4 @@
-The cfDNA API reference
+The cfdna API reference
 =============================
+
 .. automodule:: cfdna

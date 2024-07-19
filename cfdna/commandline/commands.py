@@ -57,9 +57,11 @@ def CNV_calling(args):
                                                                 use_normal = args.use_normal,
                                                                 keep_sex_chroms = args.add_sex,
                                                                 normal = [0.1, 0.25, 0.5, 0.75, 0.9],
-                                                                ploidy = [1,2,3],
+                                                                ploidy = [2,3],
                                                                 estimatePloidy = True,
-                                                                scStates = [1, 3])
+                                                                scStates = [1, 3],
+                                                                minSegmentBins = 25,
+                                                                maxCN = 5)
             else:
                 cfdna_object = ngs.segment.cnv_pipeline.call_cnv_pipeline(cfdna_object,
                                                             frags,
@@ -70,9 +72,11 @@ def CNV_calling(args):
                                                             use_normal = args.use_normal,
                                                             keep_sex_chroms = args.add_sex,
                                                             normal = [0.1, 0.25, 0.5, 0.75, 0.9],
-                                                            ploidy = [1,2,3],
+                                                            ploidy = [2,3],
                                                             estimatePloidy = True,
-                                                            scStates = None)
+                                                            scStates = None,
+                                                            minSegmentBins = 25,
+                                                            maxCN = 5)
             
             # Add WPS
             if args.add_wps:
@@ -109,13 +113,16 @@ def CNV_calling(args):
         
         # Write seg annotations
         if args.anno_segs:
+            sample = os.path.split(prefix)[-1]
             df = cfdna_object.obs_intervals[sample]["cnv_segments"].df
             df.loc[:,"chrom"] = cfdna_object.obs_intervals[sample]["cnv_segments"].index.labels
             df.loc[:,"start"] = cfdna_object.obs_intervals[sample]["cnv_segments"].index.starts
             df.loc[:,"end"] = cfdna_object.obs_intervals[sample]["cnv_segments"].index.ends
-            df = df.loc[:,['chrom', 'start', 'end', 'median', 'copy_number', 'event', 'subclone_status',
-                           'logR_Copy_Number', 'Corrected_Copy_Number', 'Corrected_Call', 'var']]
-            df.to_csv(prefix+"_seg_annotations.txt", header=True, index=False, sep="\t")
+            df.loc[:,"sample"] = sample
+            df.loc[:,"n_bins"] = ((df.loc[:,"end"].values - df.loc[:,"start"].values) / args.bin_size).astype(int)
+            df = df.loc[:,['sample', 'chrom', 'start', 'end', 'copy_number', 'event', 'subclone_status',
+                           'logR_Copy_Number', 'Corrected_Copy_Number', 'Corrected_Call', 'var', 'n_bins', 'median']]
+            df.to_csv(prefix+"_seg_annotations.seg", header=True, index=False, sep="\t")
 
             # Drop columns
             df.drop(columns=["chrom", "start", "end"], inplace=True)

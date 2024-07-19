@@ -1,6 +1,4 @@
-:github_url: https://github.com/kylessmith/cfdna/tree/master/cfdna/core/cfDNA.py#L14-L471
-
-cfdna.cfDNA
+﻿cfdna.cfDNA
 ===========
 
 .. currentmodule:: cfdna
@@ -11,15 +9,6 @@ cfdna.cfDNA
 
    
    
-   .. rubric:: Attributes
-
-   .. autosummary::
-      :toctree: .
-   
-      ~cfdna.cfDNA.chroms
-      ~cfdna.cfDNA.n_chroms
-      ~cfdna.cfDNA.size
-   
    
 
    
@@ -29,15 +18,14 @@ cfdna.cfDNA
    .. autosummary::
       :toctree: .
    
-      ~cfdna.cfDNA.call_cnvs
-      ~cfdna.cfDNA.downsample
-      ~cfdna.cfDNA.fragment_profile
-      ~cfdna.cfDNA.peak_distances
-      ~cfdna.cfDNA.predict_nucleosomes
-      ~cfdna.cfDNA.summarize
-      ~cfdna.cfDNA.window_mean_scores
-      ~cfdna.cfDNA.window_nfr
-      ~cfdna.cfDNA.wps
-      ~cfdna.cfDNA.write_summary
+      ~cfdna.cfDNA.add_anno
+      ~cfdna.cfDNA.add_intervals
+      ~cfdna.cfDNA.add_obs
+      ~cfdna.cfDNA.add_obs_intervals
+      ~cfdna.cfDNA.add_obs_values
+      ~cfdna.cfDNA.add_values
+      ~cfdna.cfDNA.from_h5
+      ~cfdna.cfDNA.log_fragments
+      ~cfdna.cfDNA.to_h5
    
    

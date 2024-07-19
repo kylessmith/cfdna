@@ -4,16 +4,15 @@ from .wps import *
 
 __doc__="""\
 
-Processing API
-============
-.. currentmodule:: cfDNA
+Nucleosome positioning analysis
+===============================
+.. currentmodule:: cfdna.tools.nucleosome
 
 Generic
 -------
 .. autosummary::
    :toctree: .
 
-   nfr
-   wps
+   wps_windows
 
 """

@@ -5,14 +5,14 @@ __doc__="""\
 
 IO API
 ============
-.. currentmodule:: cfDNA
+.. currentmodule:: cfdna.io.read
 
-Generic
--------
+Functions
+---------
 .. autosummary::
    :toctree: .
 
-   read_bam
+   read_sam
    read_h5
 
 """

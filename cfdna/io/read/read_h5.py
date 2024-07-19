@@ -3,8 +3,11 @@ import numpy as np
 import h5py
 from projectframe import ProjectFrame
 
+# Local imports
+from ...core import cfDNA
 
-def read_h5(h5_filename: str) -> ProjectFrame:
+
+def read_h5(h5_filename: str) -> cfDNA:
     """
     Read project frame from HDF5 file
 
@@ -15,11 +18,11 @@ def read_h5(h5_filename: str) -> ProjectFrame:
 
     Returns
     -------
-        pf : :class: `project_frame.ProjectFrame`
-            Project frame
+        cfdna_object : :class: `cfdna.cfDNA`
+            cfDNA object
     """
 
     # Read project frame from HDF5 file
-    pf = ProjectFrame.read_h5(h5_filename)
+    cfdna_object = ProjectFrame.read_h5(h5_filename)
 
-    return pf
+    return cfdna_object

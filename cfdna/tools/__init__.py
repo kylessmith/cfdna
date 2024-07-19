@@ -8,19 +8,19 @@ from .summarize.summarize import *
 
 __doc__="""\
 
-Processing API
-============
-.. currentmodule:: cfDNA
+Tools library for cfDNA analysis
+================================
+.. currentmodule:: cfdna
 
 Generic
 -------
 .. autosummary::
    :toctree: .
 
-   segmentation
-   nfr
-   wps
-   frag_pattern
+   nucleosome
+   coverage
+   fragmentation
    summarize
+   cnv
 
 """

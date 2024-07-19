@@ -7,10 +7,10 @@ __doc__="""\
 
 IO API
 ============
-.. currentmodule:: cfDNA
+.. currentmodule:: cfdna.io
 
-Generic
--------
+Functions
+---------
 .. autosummary::
    :toctree: .
 

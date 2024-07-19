@@ -3,15 +3,15 @@ from .segmentation import *
 
 __doc__="""\
 
-Processing API
-============
-.. currentmodule:: cfDNA
+Copy Number Variation analysis
+==============================
+.. currentmodule:: cfdna.tools.cnv
 
 Generic
 -------
 .. autosummary::
    :toctree: .
 
-   segmentation
+   call_cnvs
 
 """

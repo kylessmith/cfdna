@@ -1,293 +1,543 @@
 
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>cfdna.cfDNA &#8212; cfdna 2.1.2 documentation</title>
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cfdna.cfDNA &mdash; cfdna 0.1.0 documentation</title>
   
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  
-  
-  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=75096f5e" />
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/typehints.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <script src="../_static/documentation_options.js?v=b3e23499"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/cfdna.cfDNA';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cfdna.cfDNA.chroms" href="cfdna.cfDNA.chroms.html" />
-    <link rel="prev" title="The cfDNA API reference" href="index.html" /> 
-</head>
+    <link rel="next" title="cfdna.cfDNA.add_anno" href="cfdna.cfDNA.add_anno.html" />
+    <link rel="prev" title="The cfdna API reference" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-   
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
 
-          
-            <a href="../index.html" class="icon icon-home"> cfdna
-          
-
-          
-          </a>
-
-          
-            
-            
-              <div class="version">
-                0.1.0
-              </div>
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
 
-          
-        </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
 
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">The cfDNA API reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#api">API</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="index.html#central-class">Central class</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">cfdna.cfDNA</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#summary-classes">Summary classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#utility-functions">Utility functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#plotting-functions">Plotting functions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-</ul>
+  
+    
+  
 
-            
-          
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
       
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">cfdna</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="index.html">The cfDNA API reference</a> &raquo;</li>
-        
-      <li>cfdna.cfDNA</li>
     
     
-      <li class="wy-breadcrumbs-aside">
-        
-            
-            
-              <!-- User defined GitHub URL -->
-              <a href="https://github.com/kylessmith/cfdna/tree/master/cfdna/core/cfDNA.py#L14-L471" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
-      </li>
+    <img src="../_static/logo.svg" class="logo__image only-light" alt="cfdna 2.1.2 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.svg" class="logo__image only-dark" alt="cfdna 2.1.2 documentation - Home"/>`);</script>
+  
+  
+</a></div>
     
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    The cfdna API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://www.biosciencestack.com/documentation/">
+    Other tools
+  </a>
+</li>
+
   </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
 
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/kylessmith/cfdna" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
   
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
-  <div class="section" id="cfdna-cfdna">
-<h1>cfdna.cfDNA<a class="headerlink" href="#cfdna-cfdna" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="cfdna.cfDNA">
-<em class="property">class </em><code class="sig-prename descclassname">cfdna.</code><code class="sig-name descname">cfDNA</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sam_fn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chrom</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sam_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">min_size</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">max_size</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">paired</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">qcfail</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mapq_cutoff</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">proportion</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cfdna/core/cfDNA.html#cfDNA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cfdna.cfDNA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper of fragments for cell-free DNA</p>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">cfDNA</span></code> stores a fragments object</p>
-<p class="rubric">Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.chroms.html#cfdna.cfDNA.chroms" title="cfdna.cfDNA.chroms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chroms</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">list</span></code> : List of chromosomes</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.n_chroms.html#cfdna.cfDNA.n_chroms" title="cfdna.cfDNA.n_chroms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_chroms</span></code></a></p></td>
-<td><p>Number of chromosomes</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.size.html#cfdna.cfDNA.size" title="cfdna.cfDNA.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></p></td>
-<td><p>Number of fragments</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.call_cnvs.html#cfdna.cfDNA.call_cnvs" title="cfdna.cfDNA.call_cnvs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">call_cnvs</span></code></a>([chrom, bin_size, min_length, …])</p></td>
-<td><p>Call Copy Number Variants (CNVs)</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.downsample.html#cfdna.cfDNA.downsample" title="cfdna.cfDNA.downsample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">downsample</span></code></a>([proportion, n_frags])</p></td>
-<td><p>Randomly downsample fragments</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.fragment_profile.html#cfdna.cfDNA.fragment_profile" title="cfdna.cfDNA.fragment_profile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fragment_profile</span></code></a>([chrom, bin_size, genome, …])</p></td>
-<td><p>Determine fragment profile (ratio of large fragments to small fragments)</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.peak_distances.html#cfdna.cfDNA.peak_distances" title="cfdna.cfDNA.peak_distances"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peak_distances</span></code></a>(peaks[, bin_size, …])</p></td>
-<td><p>Determine distance between peaks</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.predict_nucleosomes.html#cfdna.cfDNA.predict_nucleosomes" title="cfdna.cfDNA.predict_nucleosomes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_nucleosomes</span></code></a>(wps[, window, …])</p></td>
-<td><p>Call peaks from WPS</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.summarize.html#cfdna.cfDNA.summarize" title="cfdna.cfDNA.summarize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summarize</span></code></a>([bin_size, genome, …])</p></td>
-<td><p>Calculate summary metrics</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.window_mean_scores.html#cfdna.cfDNA.window_mean_scores" title="cfdna.cfDNA.window_mean_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">window_mean_scores</span></code></a>(values[, bed_fn, …])</p></td>
-<td><p>Calculate mean scores for each postion within a window</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.window_nfr.html#cfdna.cfDNA.window_nfr" title="cfdna.cfDNA.window_nfr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">window_nfr</span></code></a>(values[, bed_fn, upstream, …])</p></td>
-<td><p>Calculate Nucleosome Free Region score per window</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.wps.html#cfdna.cfDNA.wps" title="cfdna.cfDNA.wps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wps</span></code></a>([chrom, protection, min_length, …])</p></td>
-<td><p>Calculate Window Protection Score (WPS)</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.write_summary.html#cfdna.cfDNA.write_summary" title="cfdna.cfDNA.write_summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_summary</span></code></a>(summary, output_h5)</p></td>
-<td><p>Write summary to h5 file</p></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</div>
-
-
-           </div>
-           
-          </div>
-          <footer>
   
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="cfdna.cfDNA.chroms.html" class="btn btn-neutral float-right" title="cfdna.cfDNA.chroms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral float-left" title="The cfDNA API reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
-  <hr/>
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
 
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Kyle S. Smith.
-
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-
-        </div>
-      </div>
-
-    </section>
-
-  </div>
+    </header>
   
 
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
 
   
-  
+  <div class="sidebar-header-items sidebar-primary__section">
     
-   
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    The cfdna API reference
+  </a>
+</li>
 
-</body>
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://www.biosciencestack.com/documentation/">
+    Other tools
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/kylessmith/cfdna" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">The cfdna API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">cfdna.cfDNA</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="cfdna-cfdna">
+<h1>cfdna.cfDNA<a class="headerlink" href="#cfdna-cfdna" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cfdna.cfDNA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cfdna.</span></span><span class="sig-name descname"><span class="pre">cfDNA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">anno</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_intervals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hg19'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cfdna/core/core.html#cfDNA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cfdna.cfDNA" title="Link to this definition">#</a></dt>
+<dd><p>Wrapper of ProjectFrame for cell-free DNA</p>
+<blockquote>
+<div><p><a class="reference internal" href="#cfdna.cfDNA" title="cfdna.cfDNA"><code class="xref py py-class docutils literal notranslate"><span class="pre">cfDNA</span></code></a> stores a fragments object</p>
+</div></blockquote>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.add_anno.html#cfdna.cfDNA.add_anno" title="cfdna.cfDNA.add_anno"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_anno</span></code></a>(key[, obs, value])</p></td>
+<td><p>Add value to key in .anno</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.add_intervals.html#cfdna.cfDNA.add_intervals" title="cfdna.cfDNA.add_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_intervals</span></code></a>(key, values)</p></td>
+<td><p>Add value to key in .anno</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.add_obs.html#cfdna.cfDNA.add_obs" title="cfdna.cfDNA.add_obs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_obs</span></code></a>(obs)</p></td>
+<td><p>Add observations to ProjectFrame</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.add_obs_intervals.html#cfdna.cfDNA.add_obs_intervals" title="cfdna.cfDNA.add_obs_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_obs_intervals</span></code></a>(obs, key, values)</p></td>
+<td><p>Add value to key in .anno</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.add_obs_values.html#cfdna.cfDNA.add_obs_values" title="cfdna.cfDNA.add_obs_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_obs_values</span></code></a>(obs, key, values)</p></td>
+<td><p>Add value to key in .anno</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.add_values.html#cfdna.cfDNA.add_values" title="cfdna.cfDNA.add_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_values</span></code></a>(key, values)</p></td>
+<td><p>Add value to key in .anno</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.from_h5.html#cfdna.cfDNA.from_h5" title="cfdna.cfDNA.from_h5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_h5</span></code></a>(h5_group)</p></td>
+<td><p>Read ProjectFrame from h5py.Group or file name</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="cfdna.cfDNA.log_fragments.html#cfdna.cfDNA.log_fragments" title="cfdna.cfDNA.log_fragments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_fragments</span></code></a>(frags)</p></td>
+<td><p>Log Fragments object to ProjectFrame</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="cfdna.cfDNA.to_h5.html#cfdna.cfDNA.to_h5" title="cfdna.cfDNA.to_h5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_h5</span></code></a>(h5_group[, compression_opts, verbose])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cfdna.cfDNA"><code class="docutils literal notranslate"><span class="pre">cfDNA</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/kylessmith/cfdna/edit/master/api/cfdna.cfDNA.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/api/cfdna.cfDNA.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Kyle S. Smith..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
 </html>

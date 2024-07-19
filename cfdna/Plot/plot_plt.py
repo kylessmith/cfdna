@@ -1,3 +1,7 @@
+"""
+Create matplotlib plots from cfDNA object
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import ngsfragments as ngs
@@ -11,33 +15,37 @@ matplotlib.rcParams['ps.fonttype'] = 42
 
 
 def cnv_summary(cfdna_object: cfDNA,
-                key: str,
+                sample: str,
+                add_wps: bool = False,
                 show: bool = True,
-                save: bool = None) -> plt.figure:
+                save: str = None) -> plt.figure:
     """
-    Plot summary metrics
+    Plot CNV summary
 
     Parameters
     ----------
         cfdna_object : cfDNA
             cfDNA object
-        key : str
+        sample : str
             Sample name
+        add_wps : bool
+            Add WPS (default: False)
         show : bool
-            Show plot
+            Show plot (default: True)
         save : str
-            Save plot
+            Save plot to file (default: None)
     
     Returns
     -------
-        fig
+        fig : plt.figure
             matplotlib.pyplot.figure
     """
 
     # Create figure
-    fig = ngs.plot.plot_plt.cnv_summary(cfdna_object,
-                                        key,
-                                        show = show,
-                                        save = save)
+    fig = ngs.plot.cnv_summary(cfdna_object,
+                            sample,
+                            add_wps = add_wps,
+                            show = show,
+                            save = save)
 
     return fig

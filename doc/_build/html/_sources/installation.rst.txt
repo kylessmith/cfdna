@@ -13,7 +13,7 @@ Pull ailist from `PyPI <https://pypi.org/project/cfdna>`__ (consider
 using ``pip3`` to access Python 3)::
 
     pip install pysam
-	pip install cfdna
+    pip install cfdna
 
 PyPI only
 ~~~~~~~~~
