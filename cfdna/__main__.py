@@ -1,5 +1,5 @@
 import argparse
-from .commandline.commands import CNV_calling, GeneActivity
+from .commandline.commands import CNV_calling, GeneActivity, GenomeWPS, GenomeCoverage
 
 
 if __name__ == "__main__":
@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser_cnv.add_argument("--prefix", help="Prefix for ouput files", default="")
     parser_cnv.add_argument("--bin_size", type=int, help="Bin size to use (default=100000)", default=100000)
     parser_cnv.add_argument("--hmm_bin_size", type=int, help="Bin size to use (default=1000000)", default=1000000)
-    parser_cnv.add_argument("--genome", help="Version of genome to use (default=hg19)", default="hg19")
+    parser_cnv.add_argument("--genome", help="Version of genome to use (default=hg38)", default="hg38")
     parser_cnv.add_argument("--proportion", type=float, help="Proportion of fragments to use (default: 1.0)", default=1.0)
     parser_cnv.add_argument("--n_frags", type=int, help="Estimate of number of fragments to use (default: ALL)", default=0)
     parser_cnv.add_argument("--min_length", type=int, help="Minimum length to consider (default: 1)", default=1)
@@ -30,15 +30,17 @@ if __name__ == "__main__":
     parser_cnv.add_argument("--clonal", help="Whether to predict clonality (default: False)", default=False, action="store_true")
     parser_cnv.add_argument("--anno_file", help="Whether to write text file with predictioned metrics (default: False)", default=False, action="store_true")
     parser_cnv.add_argument("--anno_segs", help="Whether to annotated seg file (default: False)", default=False, action="store_true")
+    parser_cnv.add_argument("--bins_file", help="Whether to write bins file (default: False)", default=False, action="store_true")
     parser_cnv.add_argument("--verbose", help="Whether to be verbose (default: False)", default=False, action="store_true")
     parser_cnv.set_defaults(func=CNV_calling)
 
-    # Call Gebe activity
+    # Call Gene activity
     parser_gene = subparsers.add_parser("geneActivity", help="Write gene activity")
     parser_gene.add_argument("--bam", help="BAM file", required=True, nargs='*')
     parser_gene.add_argument("--prefix", help="Prefix for ouput files", default="")
-    parser_gene.add_argument("--genome", help="Version of genome to use (default=hg19)", default="hg19")
+    parser_gene.add_argument("--genome", help="Version of genome to use (default=hg38)", default="hg38")
     parser_gene.add_argument("--feature", help="Feature to use (default=gene)", default="gene")
+    parser_gene.add_argument("--protection", type=int, help="Protection winodw size (default: 120)", default=120)
     parser_gene.add_argument("--min_length", type=int, help="Minimum length to consider (default: 120)", default=120)
     parser_gene.add_argument("--max_length", type=int, help="Maximum length to consider (default: 220)", default=220)
     parser_gene.add_argument("--mapq", type=int, help="Mapping quality cutoff (default: 25)", default=25)
@@ -48,6 +50,35 @@ if __name__ == "__main__":
     parser_gene.add_argument("--qcfail", help="Whether to remove qcfail flag (default: False)", default=False, action="store_true")
     parser_gene.add_argument("--verbose", help="Whether to be verbose (default: False)", default=False, action="store_true")
     parser_gene.set_defaults(func=GeneActivity)
+
+    # Call Genome WPS
+    parser_wps = subparsers.add_parser("genomeWPS", help="Write genome WPS")
+    parser_wps.add_argument("--bam", help="BAM file", required=True, nargs='*')
+    parser_wps.add_argument("--prefix", help="Prefix for ouput files", default="")
+    parser_wps.add_argument("--genome", help="Version of genome to use (default=hg38)", default="hg38")
+    parser_wps.add_argument("--protection", type=int, help="Protection winodw size (default: 120)", default=120)
+    parser_wps.add_argument("--min_length", type=int, help="Minimum length to consider (default: 120)", default=120)
+    parser_wps.add_argument("--max_length", type=int, help="Maximum length to consider (default: 220)", default=220)
+    parser_wps.add_argument("--mapq", type=int, help="Mapping quality cutoff (default: 25)", default=25)
+    parser_wps.add_argument("--nthreads", type=int, help="Number of threads to use (default=1)", default=1)
+    parser_wps.add_argument("--single", help="Whether to reads are single ended (default: False)", default=False, action="store_true")
+    parser_wps.add_argument("--qcfail", help="Whether to remove qcfail flag (default: False)", default=False, action="store_true")
+    parser_wps.add_argument("--verbose", help="Whether to be verbose (default: False)", default=False, action="store_true")
+    parser_wps.set_defaults(func=GenomeWPS)
+
+    # Call Genome coverage
+    parser_cov = subparsers.add_parser("genomeCov", help="Write genome coverage")
+    parser_cov.add_argument("--bam", help="BAM file", required=True, nargs='*')
+    parser_cov.add_argument("--prefix", help="Prefix for ouput files", default="")
+    parser_cov.add_argument("--genome", help="Version of genome to use (default=hg38)", default="hg38")
+    parser_cov.add_argument("--min_length", type=int, help="Minimum length to consider (default: 1)", default=1)
+    parser_cov.add_argument("--max_length", type=int, help="Maximum length to consider (default: 1000)", default=1000)
+    parser_cov.add_argument("--mapq", type=int, help="Mapping quality cutoff (default: 25)", default=25)
+    parser_cov.add_argument("--nthreads", type=int, help="Number of threads to use (default=1)", default=1)
+    parser_cov.add_argument("--single", help="Whether to reads are single ended (default: False)", default=False, action="store_true")
+    parser_cov.add_argument("--qcfail", help="Whether to remove qcfail flag (default: False)", default=False, action="store_true")
+    parser_cov.add_argument("--verbose", help="Whether to be verbose (default: False)", default=False, action="store_true")
+    parser_cov.set_defaults(func=GenomeCoverage)
 
     args = parser.parse_args()
 

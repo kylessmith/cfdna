@@ -21,6 +21,7 @@ See the code and discuss development on `GitHub <https://github.com/kylessmith/c
    api/index
    tutorial
    installation
+   bestpractices
 
 
 Indices and tables

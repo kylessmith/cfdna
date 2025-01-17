@@ -23,7 +23,8 @@ class cfDNA(ProjectFrame):
                  obs: set = None,
                  uns: UnstructuredLookup = None,
                  params: UnstructuredLookup = None,
-                 genome_version: str = "hg19"):
+                 genome_version: str = "hg19",
+                 pf: ProjectFrame = None):
         """
         Initialize cfDNA object
                  
@@ -47,6 +48,8 @@ class cfDNA(ProjectFrame):
                 Parameters
             genome_version : str
                 Reference genome version (default: "hg19")
+            pf : ProjectFrame
+                Inpute projectframe
                  
         Returns
         -------
@@ -54,8 +57,12 @@ class cfDNA(ProjectFrame):
 
         """
 
-        super().__init__(anno, values, obs_values, intervals,
-                         obs_intervals, obs, uns, params)
+        if pf is None:
+            super().__init__(anno, values, obs_values, intervals,
+                            obs_intervals, obs, uns, params)
+        else:
+            super().__init__(pf.anno, pf.values, pf.obs_values, pf.intervals,
+                            pf.obs_intervals, pf.obs, pf.uns, pf.params)
         
         self.params["ref_genome"] = genome_version
 

@@ -2,7 +2,13 @@ from ..core.core import cfDNA
 import os
 import multiprocessing
 import matplotlib.pyplot as plt
+import numpy as np
 import ngsfragments as ngs
+from intervalframe import IntervalFrame
+
+# Local imports
+from ..tools.nucleosome.wps import wps_gene_fft
+from ..tools.nucleosome.wps import predict_nucleosomes
 
 
 def CNV_calling(args):
@@ -48,35 +54,45 @@ def CNV_calling(args):
             
             # Run CNV for hmm models
             if args.clonal:
-                cfdna_object = ngs.segment.cnv_pipeline.call_cnv_pipeline(cfdna_object,
-                                                                frags,
-                                                                genome_version=args.genome,
-                                                                cnv_binsize=args.bin_size,
-                                                                hmm_binsize=args.hmm_bin_size,
-                                                                nthreads = nthreads,
-                                                                use_normal = args.use_normal,
-                                                                keep_sex_chroms = args.add_sex,
-                                                                normal = [0.1, 0.25, 0.5, 0.75, 0.9],
-                                                                ploidy = [2,3],
-                                                                estimatePloidy = True,
-                                                                scStates = [1, 3],
-                                                                minSegmentBins = 25,
-                                                                maxCN = 5)
+                cnvs = ngs.segment.CNVcaller(genome_version=args.genome,
+                                            cnv_binsize=args.bin_size,
+                                            hmm_binsize=args.hmm_bin_size,
+                                            use_normal = args.use_normal,
+                                            keep_sex_chroms = args.add_sex,
+                                            normal = [0.1, 0.25, 0.5, 0.75, 0.9],
+                                            ploidy = [2,3],
+                                            estimatePloidy = True,
+                                            scStates = [1, 3],
+                                            minSegmentBins = 25,
+                                            maxCN = 5)
+                
             else:
-                cfdna_object = ngs.segment.cnv_pipeline.call_cnv_pipeline(cfdna_object,
-                                                            frags,
-                                                            genome_version=args.genome,
-                                                            cnv_binsize=args.bin_size,
-                                                            hmm_binsize=args.hmm_bin_size,
-                                                            nthreads = nthreads,
-                                                            use_normal = args.use_normal,
-                                                            keep_sex_chroms = args.add_sex,
-                                                            normal = [0.1, 0.25, 0.5, 0.75, 0.9],
-                                                            ploidy = [2,3],
-                                                            estimatePloidy = True,
-                                                            scStates = None,
-                                                            minSegmentBins = 25,
-                                                            maxCN = 5)
+                cnvs = ngs.segment.CNVcaller(genome_version=args.genome,
+                                            cnv_binsize=args.bin_size,
+                                            hmm_binsize=args.hmm_bin_size,
+                                            use_normal = args.use_normal,
+                                            keep_sex_chroms = args.add_sex,
+                                            normal = [0.1, 0.25, 0.5, 0.75, 0.9],
+                                            ploidy = [2,3],
+                                            estimatePloidy = True,
+                                            scStates = None,
+                                            minSegmentBins = 25,
+                                            maxCN = 5)
+            # Call CNVs
+            sample = os.path.split(prefix)[-1]
+            cnvs.predict_cnvs(frags)
+            cfdna_object = cfDNA(pf=cnvs.pf, genome_version=args.genome)
+            cfdna_object.log_fragments(frags)
+            cfdna_object.params["cnv_binsize"] = args.bin_size
+            # Calculate segment variance
+            cfdna_object.obs_intervals[sample]["cnv_segments"].annotate(cfdna_object.intervals["cnv_bins"], sample, "var")
+            
+            #cfdna_object.add_anno("n_fragments", sample, len(frags.frags))
+            # Calculate segment variance
+            #cfdna_object.obs_intervals[sample]["cnv_segments"].annotate(cfdna_object.intervals["cnv_bins"], sample, "var")
+            #length_dist = frags.length_dist()
+            #length_dist.name = sample
+            #cfdna_object.add_values("length_dist", length_dist)
             
             # Add WPS
             if args.add_wps:
@@ -127,6 +143,20 @@ def CNV_calling(args):
             # Drop columns
             df.drop(columns=["chrom", "start", "end"], inplace=True)
 
+        # Write bins
+        if args.bins_file:
+            sample = os.path.split(prefix)[-1]
+            df = cfdna_object.intervals["cnv_bins"].df
+            df.loc[:,"chrom"] = cfdna_object.intervals["cnv_bins"].index.labels
+            df.loc[:,"start"] = cfdna_object.intervals["cnv_bins"].index.starts
+            df.loc[:,"end"] = cfdna_object.intervals["cnv_bins"].index.ends
+            df.loc[:,"ratio"] = df.loc[:,sample].values
+            df = df.loc[:,['chrom', 'start', 'end', 'ratio']]
+            df.to_csv(prefix+"_bins.txt", header=True, index=False, sep="\t")
+
+            # Drop columns
+            df.drop(columns=["chrom", "start", "end", "ratio"], inplace=True)
+
 
 def GeneActivity(args):
     """
@@ -149,6 +179,7 @@ def GeneActivity(args):
             prefix = os.path.split(bam)[-1].split(".bam")[0]
         else:
             prefix = args.prefix
+        sample = os.path.split(prefix)[-1]
         
         # Read bam
         frags = ngs.io.from_sam(bam,
@@ -168,28 +199,175 @@ def GeneActivity(args):
             cfdna_object = cfDNA(genome_version=args.genome)
 
         # Get gene activity
-        gene_activity = ngs.metrics.gene_activity(frags,
-                                                genome_version=args.genome,
-                                                feature=args.feature,
-                                                min_length=args.min_length,
-                                                max_length=args.max_length,
-                                                verbose=args.verbose)
-        
-        # Correct gene activity
-        gene_activity = ngs.metrics.correct_gene_activity(frags,
-                                                        gene_activity,
-                                                        correct_cnv = False,
-                                                        genome_version = args.genome,
-                                                        feature = args.feature,
-                                                        verbose = args.verbose)
+        gene_pattern = wps_gene_fft(frags,
+                                    genome_version = args.genome,
+                                    protection = args.protection,
+                                    min_length = args.min_length,
+                                    max_length = args.max_length,
+                                    freq_range = (120, 280),
+                                    scale = True,
+                                    feature = args.feature,
+                                    verbose = args.verbose)
+        #gene_pattern = gene_pattern.loc[gene_pattern.sum(axis=1).values != 0,:]
+        gene_activity = gene_pattern.loc[:,193:205].mean(axis=1).to_frame()
+        gene_activity.columns = [sample]
 
         # Add to cfDNA object
         cfdna_object.add_values("gene_activity", gene_activity)
 
-        # Write h5
-        if args.cache != "":
-            cfdna_object.to_h5(args.cache)
-        else:
-            cfdna_object.to_h5(prefix+".h5")
+    # Write parquet
+    cfdna_object.values["gene_activity"].to_parquet("gene_activity.parquet")
 
+
+def GenomeCoverage(args):
+    """
+    """
+    import pyBigWig
+
+    # Check number of cores
+    if args.nthreads == -1:
+        nthreads = multiprocessing.cpu_count()
+    else:
+        nthreads = args.nthreads
+
+    # Detect if multiple bams
+    if isinstance(args.bam, list):
+        bams = args.bam
+    else:
+        bams = [args.bam]
+
+    for bam in bams:
+        if args.prefix == "":
+            prefix = os.path.split(bam)[-1].split(".bam")[0]
+        else:
+            prefix = args.prefix
+        sample = os.path.split(prefix)[-1]
         
+        # Read bam
+        frags = ngs.io.from_sam(bam,
+                                genome_version=args.genome,
+                                min_size = args.min_length,
+                                max_size = args.max_length,
+                                paired = not args.single,
+                                qcfail = args.qcfail,
+                                mapq_cutoff = args.mapq,
+                                nthreads=nthreads,
+                                verbose=args.verbose)
+        # Calculate coverage
+        bw = pyBigWig.open(sample+"_coverage.bw", "w")
+        header = []
+        chrom_ranges = frags.frags.label_ranges
+        for chrom in chrom_ranges:
+            ranges = chrom_ranges[chrom]
+            header.append((chrom, ranges[1]))
+        bw.addHeader(header)
+        chroms = frags.frags.unique_labels
+        for chrom in chroms:
+            if args.verbose: print(chrom)
+            cov = ngs.coverage.coverage(frags, chrom=chrom, min_length=args.min_length, max_length=args.max_length)
+            ngs.coverage.normalize_coverage(cov, method="mean")
+            cov[chrom] = cov[chrom].astype(np.float32)
+
+            # Write to bigwig
+            bw.addEntries(chrom, cov[chrom].index.values, values=cov[chrom].values, span=1)
+        
+        bw.close()
+
+
+def GenomeWPS(args):
+    """
+    """
+    import pyBigWig
+
+    # Check number of cores
+    if args.nthreads == -1:
+        nthreads = multiprocessing.cpu_count()
+    else:
+        nthreads = args.nthreads
+
+    # Detect if multiple bams
+    if isinstance(args.bam, list):
+        bams = args.bam
+    else:
+        bams = [args.bam]
+
+    for bam in bams:
+        if args.prefix == "":
+            prefix = os.path.split(bam)[-1].split(".bam")[0]
+        else:
+            prefix = args.prefix
+        sample = os.path.split(prefix)[-1]
+        
+        # Read bam
+        frags = ngs.io.from_sam(bam,
+                                genome_version=args.genome,
+                                min_size = args.min_length,
+                                max_size = args.max_length,
+                                paired = not args.single,
+                                qcfail = args.qcfail,
+                                mapq_cutoff = args.mapq,
+                                nthreads=nthreads,
+                                verbose=args.verbose)
+        # Calculate coverage
+        bw = pyBigWig.open(sample+"_wps.bw", "w")
+        header = []
+        chrom_ranges = frags.frags.label_ranges
+        for chrom in chrom_ranges:
+            ranges = chrom_ranges[chrom]
+            header.append((chrom, ranges[1]))
+        bw.addHeader(header)
+        chroms = frags.frags.unique_labels
+        for chrom in chroms:
+            if args.verbose: print(chrom)
+            cov = ngs.coverage.wps(frags, chrom=chrom, min_length=args.min_length, max_length=args.max_length, protection=args.protection)
+            ngs.coverage.normalize_coverage(cov, method="mean")
+            cov[chrom] = cov[chrom].astype(np.float32)
+
+            # Write to bigwig
+            bw.addEntries(chrom, cov[chrom].index.values, values=cov[chrom].values, span=1)
+        
+        bw.close()
+
+
+def WPSpeaks(args):
+    """
+    """
+    import pyBigWig
+
+    # Check number of cores
+    if args.nthreads == -1:
+        nthreads = multiprocessing.cpu_count()
+    else:
+        nthreads = args.nthreads
+
+    # Detect if multiple bams
+    if isinstance(args.bam, list):
+        bams = args.bam
+    else:
+        bams = [args.bam]
+
+    for bam in bams:
+        if args.prefix == "":
+            prefix = os.path.split(bam)[-1].split(".bam")[0]
+        else:
+            prefix = args.prefix
+        sample = os.path.split(prefix)[-1]
+        
+        # Read bam
+        frags = ngs.io.from_sam(bam,
+                                genome_version=args.genome,
+                                min_size = args.min_length,
+                                max_size = args.max_length,
+                                paired = not args.single,
+                                qcfail = args.qcfail,
+                                mapq_cutoff = args.mapq,
+                                nthreads=nthreads,
+                                verbose=args.verbose)
+        
+        peaks = predict_nucleosomes(frags,
+                        protection = args.protection,
+                        merge_distance = 5,
+				        min_length = args.min_length,
+                        max_length = args.max_length)
+        iframe_peaks = IntervalFrame(intervals=peaks)
+        iframe_peaks.to_bed(prefix+"_nucleosomes.bed")
