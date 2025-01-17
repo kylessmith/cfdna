@@ -19,8 +19,8 @@ If you dont already have numpy and scipy installed, it is best to download
 Create environment and pip install:
 ```
     conda create -n cfdna python=3.11.3
-	conda activate cfdna
-	pip install cfdna==2.0.5
+    conda activate cfdna
+    pip install cfdna
 ```
 
 Dependencies can be installed by:
