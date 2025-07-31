@@ -1,5 +1,5 @@
 import argparse
-from .commandline.commands import CNV_calling, GeneActivity, GenomeWPS, GenomeCoverage
+from .commandline.commands import CNV_calling, GeneActivity, GenomeWPS, GenomeCoverage, create_pon
 
 
 if __name__ == "__main__":
@@ -10,6 +10,7 @@ if __name__ == "__main__":
     # Call CNVs
     parser_cnv = subparsers.add_parser("callCNVs", help="Plot and write CNV segments")
     parser_cnv.add_argument("--bam", help="BAM file", required=True, nargs='*')
+    parser_cnv.add_argument("--pon", help="Panel of normals parquet generated from createPON", default="")
     parser_cnv.add_argument("--prefix", help="Prefix for ouput files", default="")
     parser_cnv.add_argument("--bin_size", type=int, help="Bin size to use (default=100000)", default=100000)
     parser_cnv.add_argument("--hmm_bin_size", type=int, help="Bin size to use (default=1000000)", default=1000000)
@@ -31,6 +32,7 @@ if __name__ == "__main__":
     parser_cnv.add_argument("--anno_file", help="Whether to write text file with predictioned metrics (default: False)", default=False, action="store_true")
     parser_cnv.add_argument("--anno_segs", help="Whether to annotated seg file (default: False)", default=False, action="store_true")
     parser_cnv.add_argument("--bins_file", help="Whether to write bins file (default: False)", default=False, action="store_true")
+    parser_cnv.add_argument("--nanopore", help="Whether input bam is from nanopore (default: False)", default=False, action="store_true")
     parser_cnv.add_argument("--verbose", help="Whether to be verbose (default: False)", default=False, action="store_true")
     parser_cnv.set_defaults(func=CNV_calling)
 
@@ -79,6 +81,21 @@ if __name__ == "__main__":
     parser_cov.add_argument("--qcfail", help="Whether to remove qcfail flag (default: False)", default=False, action="store_true")
     parser_cov.add_argument("--verbose", help="Whether to be verbose (default: False)", default=False, action="store_true")
     parser_cov.set_defaults(func=GenomeCoverage)
+
+    # Call create PON
+    parser_pon = subparsers.add_parser("createPON", help="Create panel of normals")
+    parser_pon.add_argument("--dir", help="Directory with BAM files", required=True)
+    parser_pon.add_argument("--out", help="Ouput file name", required=True)
+    parser_pon.add_argument("--genome", help="Version of genome to use (default=hg38)", default="hg38")
+    parser_pon.add_argument("--bin_size", type=int, help="Bin size (default: 10000)", default=10000)
+    parser_pon.add_argument("--min_length", type=int, help="Minimum length to consider (default: 1)", default=1)
+    parser_pon.add_argument("--max_length", type=int, help="Maximum length to consider (default: 1000)", default=1000)
+    parser_pon.add_argument("--mapq", type=int, help="Mapping quality cutoff (default: 25)", default=25)
+    parser_pon.add_argument("--nthreads", type=int, help="Number of threads to use (default=1)", default=1)
+    parser_pon.add_argument("--single", help="Whether to reads are single ended (default: False)", default=False, action="store_true")
+    parser_pon.add_argument("--qcfail", help="Whether to remove qcfail flag (default: False)", default=False, action="store_true")
+    parser_pon.add_argument("--verbose", help="Whether to be verbose (default: False)", default=False, action="store_true")
+    parser_pon.set_defaults(func=create_pon)
 
     args = parser.parse_args()
 

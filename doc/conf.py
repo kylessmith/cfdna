@@ -26,7 +26,7 @@ import cfdna
 project = 'cfdna'
 author = cfdna.__author__
 copyright = f'{datetime.now():%Y}, {author}.'
-version = "2.1.2"
+version = "2.4.0"
 release = version
 
 

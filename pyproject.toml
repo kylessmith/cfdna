@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cfdna"
-version = "2.3.2"
+version = "2.4.5"
 description = "Python package for fragment manipulation for cfDNA"
 authors = ["Kyle S. Smith <kyle.smith@stjude.org>"]
 maintainers = ["Kyle S. Smith <kyle.smith@stjude.org>"]
@@ -25,6 +25,7 @@ classifiers = [ "Development Status :: 4 - Beta",
                     "Topic :: Scientific/Engineering :: Bio-Informatics"
                   ]
 packages = [{ include = "cfdna" }]
+include = ["cfdna/**/*.parquet"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -43,7 +44,7 @@ seaborn = ">=0.12.2"
 projectframe = "^1.0.0"
 hmmCNV = "^1.1.6"
 scikit-learn = "^1.2.2"
-ngsfragments = "^2.4.2"
+ngsfragments = "^2.4.3"
 genome_info = "^1.0.7"
 
 [tool.poetry.dev-dependencies]

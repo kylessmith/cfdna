@@ -5,6 +5,25 @@ Release Notes
 .. role:: smaller
 
 
+Version 2.4.0
+-------------
+Addition of optional Panel of Normals (PON) input
+	- See tutorial
+
+
+Version 2.3.0
+-------------
+Introduction of additional output files
+	- bin files
+	- annotated segmentation files
+
+
+Version 2.2.0
+-------------
+Updates to loess normalization of GC and mappabilities
+	- Corrected together in a 2D loess
+
+
 Version 2.1.2
 -------------
 General updates for pip installation

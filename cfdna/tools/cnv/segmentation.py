@@ -14,7 +14,7 @@ def call_cnvs(cfdna_object: cfDNA,
                 frags: Fragments,
                 cnv_binsize: int = 100000,
                 hmm_binsize: int = 1000000,
-                genome_version: str = "hg19",
+                genome_version: str = "hg38",
                 nthreads: int = 1,
                 normal: List[float] = [0.1, 0.25, 0.5, 0.75, 0.9],
                 ploidy: List[int] = [2, 3],
@@ -43,7 +43,7 @@ def call_cnvs(cfdna_object: cfDNA,
         hmm_binsize : int
             Size of bins for HMM (default: 1000000)
         genome_version : str
-            Reference genome version (default: "hg19")
+            Reference genome version (default: "hg38")
         nthreads : int
             Number of threads to use (default: 1)
         normal : List[float]
@@ -98,20 +98,27 @@ def call_cnvs(cfdna_object: cfDNA,
 
     """
     
+    # Run CNV for hmm models
+    prefix = os.path.split(frags.sam_file)[-1].split(".bam")[0]
+    cnvs = ngs.segment.CNVcaller(genome_version = genome_version,
+                                cnv_binsize = cnv_binsize,
+                                hmm_binsize = hmm_binsize,
+                                use_normal = use_normal,
+                                keep_sex_chroms = add_sex,
+                                normal = normal,
+                                ploidy = ploidy,
+                                estimatePloidy = estimatePloidy,
+                                scStates = scStates,
+                                minSegmentBins = minSegmentBins,
+                                maxCN = maxCN)
+        
     # Call CNVs
-    cfdna_object = ngs.segment.cnv_pipeline.call_cnv_pipeline(cfdna_object,
-                                                            frags,
-                                                            genome_version=genome_version,
-                                                            cnv_binsize=cnv_binsize,
-                                                            hmm_binsize=hmm_binsize,
-                                                            nthreads = nthreads,
-                                                            use_normal = use_normal,
-                                                            keep_sex_chroms = add_sex,
-                                                            normal = normal,
-                                                            ploidy = ploidy,
-                                                            estimatePloidy = estimatePloidy,
-                                                            scStates = scStates,
-                                                            minSegmentBins = minSegmentBins,
-                                                            maxCN = maxCN)
+    sample = os.path.split(prefix)[-1]
+    cnvs.predict_cnvs(frags)
+    cfdna_object = cfDNA(pf=cnvs.pf, genome_version=genome_version)
+    cfdna_object.log_fragments(frags)
+    cfdna_object.params["cnv_binsize"] = cnv_binsize
+    # Calculate segment variance
+    cfdna_object.obs_intervals[sample]["cnv_segments"].annotate(cfdna_object.intervals["cnv_bins"], sample, "var")
     
     return cfdna_object

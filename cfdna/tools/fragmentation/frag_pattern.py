@@ -71,3 +71,37 @@ def fragment_profile(cfdna_object: cfDNA,
    
    # Append bins
    cfdna_object.add_intervals("frag_profile", fragment_profile)
+
+
+def fragment_entropy(frags: ngs.Fragments,
+                     bin_size: int = 100000,
+                     min_length = 100,
+                     max_length = 240,
+                     n_bins = 5):
+      """
+      """
+      from scipy.stats import entropy
+
+      # Create bins
+      cnv = ngs.segment.CNVcaller(cnv_binsize=bin_size)
+      bins = cnv.bin_data(frags)
+      cbins = cnv.correct_bins(bins)
+      shannon_entropy = np.zeros(cbins.shape[0])
+      sample = bins.df.columns.values[0]
+
+      # Iterate over chromosomes
+      for i, interval in enumerate(cbins.index):
+            bin_frags = frags.frags.intersect(interval.start, interval.end, interval.label).filter(min_length, max_length)
+            length_dist = np.zeros(max_length-min_length)
+            ld = bin_frags.length_dist()[min_length:]
+            length_dist[:len(ld)] = ld
+            hist_lengths = length_dist.reshape(-1,n_bins).sum(axis=1)
+            hist_lengths = hist_lengths / hist_lengths.sum()
+            shannon_entropy[i] = entropy(hist_lengths, base=2)
+
+      # Create DataFrame
+      cbins.df.columns = ["cnv_ratio"]
+      cbins.df.loc[:,"entropy"] = shannon_entropy
+
+      return cbins
+

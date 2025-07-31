@@ -5,8 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import ngsfragments as ngs
 from intervalframe import IntervalFrame
+from ailist import LabeledIntervalArray
+import genome_info
+import glob
 
 # Local imports
+from ..data.import_data import get_data_file
 from ..tools.nucleosome.wps import wps_gene_fft
 from ..tools.nucleosome.wps import predict_nucleosomes
 
@@ -27,6 +31,16 @@ def CNV_calling(args):
     else:
         bams = [args.bam]
 
+    # Read PON
+    if args.pon != "":
+        pon = IntervalFrame.read_parquet(args.pon)
+
+    # Read additional blacklist
+    if args.genome == "hg38":
+        blacklist = IntervalFrame.read_parquet(get_data_file("cfdna_hg38_blacklist.parquet"))
+    else:
+        blacklist = None
+
     for bam in bams:
         if args.prefix == "":
             prefix = os.path.split(bam)[-1].split(".bam")[0]
@@ -42,15 +56,29 @@ def CNV_calling(args):
             cfdna_object = cfDNA(genome_version=args.genome)
 
             # Read bam
-            frags = ngs.io.from_sam(bam,
-                                    genome_version=args.genome,
-                                    min_size = args.min_length,
-                                    max_size = args.max_length,
-                                    paired = not args.single,
-                                    qcfail = args.qcfail,
-                                    mapq_cutoff = args.mapq,
-                                    nthreads=nthreads,
-                                    verbose=args.verbose)
+            if args.nanopore:
+                import pysam
+                samfile = pysam.AlignmentFile(bam, "rb")
+                ail = LabeledIntervalArray()
+                iters = samfile.fetch(until_eof=True)
+                for x in iters:
+                    if x.is_unmapped == False and x.is_secondary == False and x.is_supplementary == False:
+                        length = x.reference_end - x.reference_start
+                        if length >= args.min_length and length <= args.max_length:
+                            ail.add(int(x.reference_start), int(x.reference_end), x.reference_name)
+                frags = ngs.Fragments(genome_version=args.genome)
+                frags.frags = ail
+                frags.sam_file = bam
+            else:
+                frags = ngs.io.from_sam(bam,
+                                        genome_version=args.genome,
+                                        min_size = args.min_length,
+                                        max_size = args.max_length,
+                                        paired = not args.single,
+                                        qcfail = args.qcfail,
+                                        mapq_cutoff = args.mapq,
+                                        nthreads=nthreads,
+                                        verbose=args.verbose)
             
             # Run CNV for hmm models
             if args.clonal:
@@ -60,7 +88,7 @@ def CNV_calling(args):
                                             use_normal = args.use_normal,
                                             keep_sex_chroms = args.add_sex,
                                             normal = [0.1, 0.25, 0.5, 0.75, 0.9],
-                                            ploidy = [2,3],
+                                            ploidy = [2, 3, 4],
                                             estimatePloidy = True,
                                             scStates = [1, 3],
                                             minSegmentBins = 25,
@@ -73,14 +101,17 @@ def CNV_calling(args):
                                             use_normal = args.use_normal,
                                             keep_sex_chroms = args.add_sex,
                                             normal = [0.1, 0.25, 0.5, 0.75, 0.9],
-                                            ploidy = [2,3],
+                                            ploidy = [2, 3, 4],
                                             estimatePloidy = True,
                                             scStates = None,
                                             minSegmentBins = 25,
                                             maxCN = 5)
             # Call CNVs
             sample = os.path.split(prefix)[-1]
-            cnvs.predict_cnvs(frags)
+            if args.pon != "":
+                cnvs.predict_cnvs(frags, normal_data=pon, additional_blacklist=blacklist, additional_blacklist_cutoff=0.3)
+            else:
+                cnvs.predict_cnvs(frags, additional_blacklist=blacklist, additional_blacklist_cutoff=0.3)
             cfdna_object = cfDNA(pf=cnvs.pf, genome_version=args.genome)
             cfdna_object.log_fragments(frags)
             cfdna_object.params["cnv_binsize"] = args.bin_size
@@ -371,3 +402,54 @@ def WPSpeaks(args):
                         max_length = args.max_length)
         iframe_peaks = IntervalFrame(intervals=peaks)
         iframe_peaks.to_bed(prefix+"_nucleosomes.bed")
+
+
+def create_pon(args):
+    """
+    """
+
+    # Load genome
+    g = genome_info.GenomeInfo(args.genome)
+
+    # Check number of cores
+    if args.nthreads == -1:
+        nthreads = multiprocessing.cpu_count()
+    else:
+        nthreads = args.nthreads
+
+    # Detect if multiple bams
+    bams = glob.glob(args.dir + "/*.bam")
+
+    # Create pon
+    pon = LabeledIntervalArray.create_bin(g["chrom_sizes"], bin_size=args.bin_size)
+    pon = IntervalFrame(intervals=pon)
+    pon = pon.loc[g["main_chromosomes"],:]
+
+    for bam in bams:
+        if args.verbose: print(bam)
+        prefix = os.path.split(bam)[-1].split(".bam")[0]
+        sample = os.path.split(prefix)[-1]
+        
+        # Read bam
+        frags = ngs.io.from_sam(bam,
+                                genome_version=args.genome,
+                                min_size = args.min_length,
+                                max_size = args.max_length,
+                                paired = not args.single,
+                                qcfail = args.qcfail,
+                                mapq_cutoff = args.mapq,
+                                nthreads=nthreads,
+                                verbose=args.verbose)
+
+        # Bin coverage
+        cnv = ngs.segment.CNVcaller(genome_version=args.genome, cnv_binsize=args.bin_size)
+        bins = cnv.bin_data(frags)
+        bins = bins.loc[g["main_chromosomes"],:]
+        bins = bins.exact_match(pon)
+        pon = pon.exact_match(bins)
+
+        # Calculate coverage
+        pon.df.loc[:,sample] = bins.df.loc[:,sample].values
+
+    # Write to parquet
+    pon.to_parquet(args.out)

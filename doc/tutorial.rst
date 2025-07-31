@@ -34,6 +34,37 @@ Commandline
 
 .. code-block:: bash
 
+	$ python -m cfdna createPON --dir ./ --out hg19_pon.parquet --genome hg19 --bin_size 10000
+	
+Note it is alway better to make PON files with smaller bins than you plan on using because they can always be merged
+
+.. code-block:: bash
+	
+	$ python -m cfdna createPON -h
+	
+	usage: __main__.py createPON [-h] --dir DIR --out OUT [--genome GENOME] [--bin_size BIN_SIZE]
+	                             [--min_length MIN_LENGTH] [--max_length MAX_LENGTH] [--mapq MAPQ] [--nthreads NTHREADS]
+	                             [--single] [--qcfail] [--verbose]
+
+	options:
+	  -h, --help            show this help message and exit
+	  --dir DIR             Directory with BAM files
+	  --out OUT             Ouput file name
+	  --genome GENOME       Version of genome to use (default=hg38)
+	  --bin_size BIN_SIZE   Bin size (default: 10000)
+	  --min_length MIN_LENGTH
+	                        Minimum length to consider (default: 1)
+	  --max_length MAX_LENGTH
+	                        Maximum length to consider (default: 1000)
+	  --mapq MAPQ           Mapping quality cutoff (default: 25)
+	  --nthreads NTHREADS   Number of threads to use (default=1)
+	  --single              Whether to reads are single ended (default: False)
+	  --qcfail              Whether to remove qcfail flag (default: False)
+	  --verbose             Whether to be verbose (default: False)
+
+
+.. code-block:: bash
+
 	$ python -m cfdna callCNVs --bam test.bam --genome hg38 --nthreads 3 --segs --add_wps --anno_segs --anno_file
 	
 .. code-block:: bash
@@ -50,6 +81,7 @@ Commandline
 	options:
 	  -h, --help            show this help message and exit
 	  --bam [BAM ...]       BAM file
+	  --pon PON             Panel of normals parquet generated from createPON
 	  --prefix PREFIX       Prefix for ouput files
 	  --bin_size BIN_SIZE   Bin size to use (default=100000)
 	  --hmm_bin_size HMM_BIN_SIZE
@@ -74,5 +106,6 @@ Commandline
 	  --clonal              Whether to predict clonality (default: False)
 	  --anno_file           Whether to write text file with predictioned metrics (default: False)
 	  --anno_segs           Whether to annotated seg file (default: False)
+	  --bins_file           Whether to write bins file (default: False)
 	  --verbose             Whether to be verbose (default: False)
 	  

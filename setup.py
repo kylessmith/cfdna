@@ -15,7 +15,7 @@ with open("README.md", "r") as fh:
 # Directories (relative to the top-level directory where setup.py resides) in which to look for data files.
 datadirs  = ("tests", "data")
 # File extensions to be considered as data files. (Literal, no wildcards.)
-dataexts  = (".py", ".pyx", ".pxd", ".c", ".h", ".h5", ".txt", ".bed")
+dataexts  = (".py", ".pyx", ".pxd", ".c", ".h", ".h5", ".txt", ".bed", ".parquet")
 # Standard documentation to detect (and package if it exists).
 standard_docs     = ["README", "LICENSE", "TODO", "CHANGELOG", "AUTHORS"]
 standard_doc_exts = [".md", ".rst", ".txt", ""]
@@ -103,7 +103,8 @@ setup(
     provides = ["cfdna"],
     keywords = ["next generation sequencing fragment cfDNA cell free DNA"],
     packages = find_packages(),
-    package_data={'cfdna': ['*.pxd', '*.pyx', '*.c', '*.h']},
+    package_data={'cfdna': ['*.pxd', '*.pyx', '*.c', '*.h'],
+                  '':['*.pxd', '*.pyx', '*.pickle', '*.h5', '*.c', '*.h', '*.parquet', '*.json', '*.txt', '*.joblib']},
     # Disable zip_safe
     zip_safe = False,
     # Custom data files not inside a Python package

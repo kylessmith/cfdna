@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to cfDNA's documentation!
-=================================
+cfDNA package documentation
+===========================
 
 .. include:: README.rst
 
@@ -22,6 +22,7 @@ See the code and discuss development on `GitHub <https://github.com/kylessmith/c
    tutorial
    installation
    bestpractices
+   details
 
 
 Indices and tables
