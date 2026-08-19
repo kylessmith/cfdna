@@ -2,17 +2,16 @@ import numpy as np
 import pandas as pd
 import ngsfragments as ngs
 import os
+from intervalframe import IntervalFrame
 
 # Local imports
 from ...core.core import cfDNA
 
 
-def fragment_profile(cfdna_object: cfDNA,
-                     frags: ngs.Fragments,
+def fragment_profile(frags: ngs.Fragments,
                      bin_size: int = 100000,
-                     bin_bias_h5_fn: str = None,
+                     genome_version: str = "hg38",
                      bias_correct: bool = True,
-                     smooth: bool = True,
                      verbose: bool = False):
    """
    Determine fragment profile (ratio of large fragments to small fragments)
@@ -39,51 +38,40 @@ def fragment_profile(cfdna_object: cfDNA,
             pandas.DataFrame
    """
 
-   # Determine file name
-   path = os.path.normpath(frags.sam_file)
-   file_name = path.split(os.sep)[-1]
-
-   # Check if file was previously annotated
-   cfdna_object.log_fragments(frags)
-
    # Calculate coverage of small and large fragments
-   small_bin_coverage = frags.bin_counts(bin_size=bin_size, min_length=100, max_length=150)
-   large_bin_coverage = frags.bin_counts(bin_size=bin_size, min_length=151, max_length=220)
+   small_bin_coverage = ngs.coverage.bin_counts(frags, bin_size=bin_size, min_length=60, max_length=160)
+   large_bin_coverage = ngs.coverage.bin_counts(frags, bin_size=bin_size, min_length=161, max_length=250)
 
    # Correct coverage
    if bias_correct:
-      small_bin_coverage = ngs.segment.correction.correct(small_bin_coverage, genome=cfdna_object.ref_genome, bin_size=bin_size, verbose=verbose)
-      large_bin_coverage = ngs.segment.correction.correct(large_bin_coverage, genome=cfdna_object.ref_genome, bin_size=bin_size, verbose=verbose)
-      small_bin_coverage = small_bin_coverage.loc[:,["corrected_counts"]]
-      small_bin_coverage.df.columns = [file_name]
-      large_bin_coverage = large_bin_coverage.loc[:,["corrected_counts"]]
-      large_bin_coverage.df.columns = [file_name]
-   else:
-      small_bin_coverage.df.columns = [file_name]
-      large_bin_coverage.df.columns = [file_name]
+      cnv = ngs.segment.CNVcaller(cnv_binsize=bin_size, genome_version=genome_version)
+      small_bin_coverage = cnv.correct_bins(small_bin_coverage)
+      large_bin_coverage = cnv.correct_bins(large_bin_coverage)
 
    # Calculate fragment profile
    fragment_profile = small_bin_coverage.copy()
-   fragment_profile.df.loc[:,file_name] = small_bin_coverage.df.loc[:,file_name].values / large_bin_coverage.df.loc[:,file_name].values
-
-   # Correct regions with 0 for both
-   fragment_profile.df.loc[pd.isnull(fragment_profile.loc[:,file_name].values), file_name] = 1.0
+   fragment_profile.df.loc[:,"counts"] = small_bin_coverage.df.loc[:,"counts"].values - large_bin_coverage.df.loc[:,"counts"].values
+   fragment_profile.df.columns = ["fragment_profile"]
    
-   # Append bins
-   cfdna_object.add_intervals("frag_profile", fragment_profile)
+   return fragment_profile
 
 
 def fragment_entropy(frags: ngs.Fragments,
                      bin_size: int = 100000,
-                     min_length = 100,
-                     max_length = 240,
-                     n_bins = 5):
+                     genome_version: str = "hg38",
+                     min_length = 60,
+                     max_length = 250,
+                     n_bins = 5,
+                     normal_bins: IntervalFrame = None,
+                     rpca_normal: bool = False,
+                     normalize_entropy: bool = True,
+                     verbose: bool = False):
       """
       """
       from scipy.stats import entropy
 
       # Create bins
-      cnv = ngs.segment.CNVcaller(cnv_binsize=bin_size)
+      cnv = ngs.segment.CNVcaller(cnv_binsize=bin_size, genome_version=genome_version)
       bins = cnv.bin_data(frags)
       cbins = cnv.correct_bins(bins)
       shannon_entropy = np.zeros(cbins.shape[0])
@@ -91,6 +79,7 @@ def fragment_entropy(frags: ngs.Fragments,
 
       # Iterate over chromosomes
       for i, interval in enumerate(cbins.index):
+            if verbose and i % 100 == 0: print(f"{i}/{cbins.shape[0]}", flush=True)
             bin_frags = frags.frags.intersect(interval.start, interval.end, interval.label).filter(min_length, max_length)
             length_dist = np.zeros(max_length-min_length)
             ld = bin_frags.length_dist()[min_length:]
@@ -102,6 +91,14 @@ def fragment_entropy(frags: ngs.Fragments,
       # Create DataFrame
       cbins.df.columns = ["cnv_ratio"]
       cbins.df.loc[:,"entropy"] = shannon_entropy
+
+      # Normalize entropy
+      cbins.df = cbins.df.drop(columns=["cnv_ratio"])
+      if normalize_entropy:
+            cbins.df.columns = ["counts"]
+            cnv = ngs.segment.CNVcaller(cnv_binsize=bin_size, genome_version=genome_version, rpca_normal=rpca_normal)
+            cbins = cnv.correct_bins(cbins, normal_bins=normal_bins)
+            cbins.df.columns = ["entropy"]
 
       return cbins
 

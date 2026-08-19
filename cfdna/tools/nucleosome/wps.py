@@ -7,9 +7,24 @@ from scipy.signal import lfilter
 from scipy.stats import trim_mean
 from scipy.signal import periodogram, welch
 from scipy.interpolate import Rbf
+from sklearn.preprocessing import quantile_transform
 
 # Local import
 from ...core import cfDNA
+
+
+def quantile_norm(cov, chrom, step=10000):
+    """
+    Quantile normalization
+    """
+    
+    for i in range(0,len(cov[chrom].values),step):
+        x = cov[chrom].values[i:i+step]
+        x = x+x.min()
+        y = quantile_transform(x.reshape(-1,1))
+        cov[chrom].values[i:i+step] = y[:,0]
+    
+    return cov
 
 
 def wps(frags, chrom=None, protection=120, min_length=120, max_length=210, normalize=True, norm_method="mean"):
@@ -110,7 +125,8 @@ def predict_nucleosomes(fragments,
     for chrom in chroms:
         if verbose: print(chrom, flush=True)
         wps = fragments.frags.wps(protection, chrom, min_length, max_length)
-        wps[chrom].values[:] = ngs.peak_calling.CallPeaks.normalize_signal(wps[chrom].values)
+        wps = quantile_norm(wps, chrom, step=10000)
+        wps[chrom].values[:] = ngs.peak_calling.CallPeaks.normalize_signal(wps[chrom].values, use_mean=False)
 
         peaks = ngs.peak_calling.CallPeaks.call_peaks(wps[chrom], str(chrom), merge_distance, 50, 190)
         if peaks.size < 10:
@@ -294,7 +310,8 @@ def wps_gene_fft(fragments,
     for chrom in chroms:
         if verbose: print(chrom, flush=True)
         wps = fragments.frags.wps(protection, chrom, min_length, max_length)
-        wps[chrom].values[:] = ngs.peak_calling.CallPeaks.normalize_signal(wps[chrom].values)
+        wps = quantile_norm(wps, chrom, step=10000)
+        wps[chrom].values[:] = ngs.peak_calling.CallPeaks.normalize_signal(wps[chrom].values, use_mean=False)
 
         chrom_genes = genes.loc[chrom,:]
 

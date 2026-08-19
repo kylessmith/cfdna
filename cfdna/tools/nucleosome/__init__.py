@@ -1,5 +1,6 @@
 from .nfr import *
 from .wps import *
+from .signal_peaks import *
 
 
 __doc__="""\

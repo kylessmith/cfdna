@@ -1,6 +1,6 @@
 import ngsfragments as ngs
 from ngsfragments import Fragments
-from ..core.core import cfDNA
+from ...core.core import cfDNA
 
 
 def gene_activity(frags: Fragments,

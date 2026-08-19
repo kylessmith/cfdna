@@ -6,13 +6,150 @@ import numpy as np
 import ngsfragments as ngs
 from intervalframe import IntervalFrame
 from ailist import LabeledIntervalArray
+import pandas as pd
 import genome_info
 import glob
+from copy import deepcopy
+from time import time
 
 # Local imports
 from ..data.import_data import get_data_file
 from ..tools.nucleosome.wps import wps_gene_fft
-from ..tools.nucleosome.wps import predict_nucleosomes
+from ..tools.nucleosome.wps import predict_nucleosomes, quantile_norm
+from ..tools.nucleosome.signal_peaks import call_positions, call_regions, write_positions, write_regions, differential_positions, Wig
+from ..tools.coverage.length_dist import decompose_frag_lengths
+from ..tools.fragmentation.end_motifs import read_end_motifs
+from ..tools.fragmentation.frag_pattern import fragment_entropy
+
+
+def FragLengthDist(args):
+    """
+    """
+
+    # Check number of cores
+    if args.nthreads == -1:
+        nthreads = multiprocessing.cpu_count()
+    else:
+        nthreads = args.nthreads
+
+    # Detect if multiple bams
+    if isinstance(args.bam, list):
+        bams = args.bam
+    else:
+        bams = [args.bam]
+
+    for bam in bams:
+        if args.prefix == "":
+            prefix = os.path.split(bam)[-1].split(".bam")[0]
+        else:
+            prefix = args.prefix
+        sample = os.path.split(prefix)[-1]
+
+        # Read bam
+        frags = ngs.io.from_sam(bam,
+                                genome_version=args.genome,
+                                min_size = 50,
+                                max_size = 250,
+                                paired = not args.single,
+                                qcfail = args.qcfail,
+                                mapq_cutoff = args.mapq,
+                                nthreads=nthreads,
+                                verbose=args.verbose)
+
+        # Decompose fragment length distribution
+        pars = decompose_frag_lengths(frags, plot_name=prefix+"_length_dist.pdf")
+
+        # Write parameters to file
+        pars_df = pd.DataFrame(pars, columns=["loc", "scale", "amp"])
+        pars_df.to_csv(prefix+"_length_dist_parameters.csv", index=False)
+
+
+def NucleosomeCalling(args):
+    # Setup output directory
+    os.makedirs(args.out, exist_ok=True)
+    start_time = time()
+
+    # Load wiggle file
+    print(f"\nLoading {args.wig_file}...")
+    wig = Wig(args.wig_file, step=args.step)
+    print(f"  Chromosomes: {len(wig.data)}")
+    print(f"  Step size: {wig.step}")
+    print(f"  Genome-wide mean: {wig.mean():.6f}")
+    print(f"  Genome-wide std:  {wig.std():.6f}")
+
+    if args.prefix == "":
+        prefix = os.path.split(args.wig_file)[-1].split(".wig")[0].split(".bw")[0]
+    else:
+        prefix = args.prefix
+
+    # Smoothing
+    if args.smooth_width > 0:
+        print(f"\nSmoothing with window={args.smooth_width}bp...")
+        wig.smooth(width=args.smooth_width)
+
+    # Save smoothed wig if smoothing was applied
+    if args.smooth_width > 0:
+        smooth_file = os.path.join(args.out, 'smoothed.wig')
+        wig.save(smooth_file)
+
+    # Position calling
+    if args.command in ('dpos', 'dtriple'):
+        print(f"\n=== Position Calling ===")
+        print(f"  Mode: {args.mode}, Height: {args.height}, "
+              f"Width: {args.width}, Distance: {args.distance}")
+
+        smts, positions = call_positions(
+            wig,
+            width=args.width,
+            distance=args.distance,
+            height=args.height,
+            mode=args.mode,
+            edge=bool(args.edge),
+            fill_gap=bool(args.gapfill),
+            compute_fuzziness=bool(args.fuzziness),
+            fuzziness_rd=args.distance
+        )
+
+        pos_file = os.path.join(args.out, prefix + '_nucleosome_peaks.bedGraph')
+        write_positions(positions, pos_file)
+
+    # Region calling
+    if args.command in ('dregion', 'dtriple'):
+        print(f"\n=== Region Calling ===")
+        print(f"  Mode: {args.mode}, Height: {args.height}, "
+              f"MinWidth: {args.region_width}, MergeDist: {args.region_dis}")
+
+        regions = call_regions(
+            wig,
+            height=args.height,
+            min_width=args.region_width,
+            distance=args.region_dis,
+            mode=args.mode
+        )
+
+        reg_file = os.path.join(args.out, prefix + '_nucleosome_regions.bedGraph')
+        write_regions(regions, reg_file)
+
+    # Differential analysis
+    if args.wig2:
+        print(f"\n=== Differential Analysis ===")
+        print(f"Loading {args.wig2}...")
+        wig2 = Wig(args.wig2, step=args.step)
+
+        if args.smooth_width > 0:
+            wig2.smooth(width=args.smooth_width)
+
+        if args.command in ('dpos', 'dtriple'):
+            diff_positions = differential_positions(wig, wig2, deepcopy(positions))
+            diff_file = os.path.join(args.out, prefix + '_differential_positions.bedGraph')
+            write_positions(diff_positions, diff_file)
+
+    elapsed = time() - start_time
+    mins = int(elapsed // 60)
+    secs = int(elapsed % 60)
+    print(f"\nDone in {mins}m {secs}s")
+
+    return
 
 
 def CNV_calling(args):
@@ -92,7 +229,10 @@ def CNV_calling(args):
                                             estimatePloidy = True,
                                             scStates = [1, 3],
                                             minSegmentBins = 25,
-                                            maxCN = 5)
+                                            maxCN = 5,
+                                            rpca_normal = args.rpca_normal,
+                                            n_mads = args.n_mads,
+                                            bcp_cutoff = args.bcp_cutoff)
                 
             else:
                 cnvs = ngs.segment.CNVcaller(genome_version=args.genome,
@@ -105,13 +245,16 @@ def CNV_calling(args):
                                             estimatePloidy = True,
                                             scStates = None,
                                             minSegmentBins = 25,
-                                            maxCN = 5)
+                                            maxCN = 5,
+                                            rpca_normal = args.rpca_normal,
+                                            n_mads = args.n_mads,
+                                            bcp_cutoff = args.bcp_cutoff)
             # Call CNVs
             sample = os.path.split(prefix)[-1]
             if args.pon != "":
-                cnvs.predict_cnvs(frags, normal_data=pon, additional_blacklist=blacklist, additional_blacklist_cutoff=0.3)
+                cnvs.predict_cnvs(frags, normal_data=pon, additional_blacklist=blacklist, additional_blacklist_cutoff=0.1, merge_MAD=args.n_mads, normal_mads=args.normal_mads)
             else:
-                cnvs.predict_cnvs(frags, additional_blacklist=blacklist, additional_blacklist_cutoff=0.3)
+                cnvs.predict_cnvs(frags, additional_blacklist=blacklist, additional_blacklist_cutoff=0.1, merge_MAD=args.n_mads, normal_mads=args.normal_mads)
             cfdna_object = cfDNA(pf=cnvs.pf, genome_version=args.genome)
             cfdna_object.log_fragments(frags)
             cfdna_object.params["cnv_binsize"] = args.bin_size
@@ -247,7 +390,7 @@ def GeneActivity(args):
         cfdna_object.add_values("gene_activity", gene_activity)
 
     # Write parquet
-    cfdna_object.values["gene_activity"].to_parquet("gene_activity.parquet")
+    cfdna_object.values["gene_activity"].engine.df.to_parquet(prefix+"gene_activity.parquet")
 
 
 def GenomeCoverage(args):
@@ -296,7 +439,8 @@ def GenomeCoverage(args):
         for chrom in chroms:
             if args.verbose: print(chrom)
             cov = ngs.coverage.coverage(frags, chrom=chrom, min_length=args.min_length, max_length=args.max_length)
-            ngs.coverage.normalize_coverage(cov, method="mean")
+            cov = quantile_norm(cov, chrom, step=10000)
+            ngs.coverage.normalize_coverage(cov, method=args.center)
             cov[chrom] = cov[chrom].astype(np.float32)
 
             # Write to bigwig
@@ -351,7 +495,8 @@ def GenomeWPS(args):
         for chrom in chroms:
             if args.verbose: print(chrom)
             cov = ngs.coverage.wps(frags, chrom=chrom, min_length=args.min_length, max_length=args.max_length, protection=args.protection)
-            ngs.coverage.normalize_coverage(cov, method="mean")
+            cov = quantile_norm(cov, chrom, step=10000)
+            ngs.coverage.normalize_coverage(cov, method=args.center)
             cov[chrom] = cov[chrom].astype(np.float32)
 
             # Write to bigwig
@@ -400,8 +545,11 @@ def WPSpeaks(args):
                         merge_distance = 5,
 				        min_length = args.min_length,
                         max_length = args.max_length)
-        iframe_peaks = IntervalFrame(intervals=peaks)
-        iframe_peaks.to_bed(prefix+"_nucleosomes.bed")
+        #iframe_peaks = IntervalFrame(intervals=peaks)
+        output_bed = open(prefix+"_nucleosomes.bed","w")
+        for peak in peaks:
+            output_bed.write(str(peak.label)+"\t"+str(peak.start)+"\t"+str(peak.end)+"\n")
+        output_bed.close()
 
 
 def create_pon(args):
@@ -453,3 +601,126 @@ def create_pon(args):
 
     # Write to parquet
     pon.to_parquet(args.out)
+
+
+def TFwps(args):
+    """
+    """
+
+    # Check number of cores
+    if args.nthreads == -1:
+        nthreads = multiprocessing.cpu_count()
+    else:
+        nthreads = args.nthreads
+
+    # Detect if multiple bams
+    if isinstance(args.bam, list):
+        bams = args.bam
+    else:
+        bams = [args.bam]
+
+    for bam in bams:
+        if args.prefix == "":
+            prefix = os.path.split(bam)[-1].split(".bam")[0]
+        else:
+            prefix = args.prefix
+        sample = os.path.split(prefix)[-1]
+
+        # Read bam
+        frags = ngs.io.from_sam(bam,
+                                genome_version=args.genome,
+                                min_size = args.min_length,
+                                max_size = args.max_length,
+                                paired = not args.single,
+                                qcfail = args.qcfail,
+                                mapq_cutoff = args.mapq,
+                                nthreads=nthreads,
+                                verbose=args.verbose)
+        tf_values = ngs.metrics.wps_metrics.wps_score_tfs(frags, protection=args.protection, min_length=args.min_length, max_length=args.max_length, upstream=5000, downstream=5000)
+        tf_values.columns = np.arange(-5000,5001)
+        tf_values.to_parquet(prefix+"_tf_wps.parquet")
+
+
+def DetectEndMotifs(args):
+    """
+    """
+
+    # Check number of cores
+    if args.nthreads == -1:
+        nthreads = multiprocessing.cpu_count()
+    else:
+        nthreads = args.nthreads
+
+    # Detect if multiple bams
+    if isinstance(args.bam, list):
+        bams = args.bam
+    else:
+        bams = [args.bam]
+
+    for bam in bams:
+        if args.prefix == "":
+            prefix = os.path.split(bam)[-1].split(".bam")[0]
+        else:
+            prefix = args.prefix
+        sample = os.path.split(prefix)[-1]
+
+        # Read bam
+        frags = ngs.io.from_sam(bam,
+                                genome_version=args.genome,
+                                min_size = args.min_length,
+                                max_size = args.max_length,
+                                paired = not args.single,
+                                qcfail = args.qcfail,
+                                mapq_cutoff = args.mapq,
+                                nthreads=nthreads,
+                                verbose=args.verbose)
+        # Find end motifs
+        motifs = read_end_motifs(frags, args.genome, verbose=args.verbose)
+
+        # Write motifs
+        motifs.to_parquet(prefix+"_end_motifs.parquet")
+
+
+def FragmentLengthEntropy(args):
+    """
+    """
+
+    # Check number of cores
+    if args.nthreads == -1:
+        nthreads = multiprocessing.cpu_count()
+    else:
+        nthreads = args.nthreads
+
+    # Detect if multiple bams
+    if isinstance(args.bam, list):
+        bams = args.bam
+    else:
+        bams = [args.bam]
+
+    for bam in bams:
+        if args.prefix == "":
+            prefix = os.path.split(bam)[-1].split(".bam")[0]
+        else:
+            prefix = args.prefix
+        sample = os.path.split(prefix)[-1]
+
+        # Read bam
+        frags = ngs.io.from_sam(bam,
+                                genome_version=args.genome,
+                                min_size = args.min_length,
+                                max_size = args.max_length,
+                                paired = not args.single,
+                                qcfail = args.qcfail,
+                                mapq_cutoff = args.mapq,
+                                nthreads=nthreads,
+                                verbose=args.verbose)
+        
+        # Calculate fragmentation entropy
+        cbins = fragment_entropy(frags,
+                                 bin_size=args.bin_size,
+                                 genome_version=args.genome,
+                                 normal_bins=None,
+                                 rpca_normal=args.rpca_normal,
+                                 normalize_entropy=True,
+                                 verbose=args.verbose)
+        cbins.to_parquet(prefix+"_fragment_entropy.parquet")
